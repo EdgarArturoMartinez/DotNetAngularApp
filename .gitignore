@@ -1,0 +1,28 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.sln.docstates
+.vs/
+.DS_Store
+*.log
+
+# Angular & Node
+node_modules/
+dist/
+.angular/
+.env
+.env.local
+
+# IDE
+.vscode/
+*.code-workspace
+
+# Build artifacts
+*.d.ts
+*.js.map
+*.spec.js
+
+# OS
+Thumbs.db

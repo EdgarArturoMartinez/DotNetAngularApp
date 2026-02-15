@@ -1,0 +1,89 @@
+<div class="products-wrapper">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-content">
+      <h1 class="page-title">Product Catalog</h1>
+      <p class="page-subtitle">Manage your vegetarian product inventory</p>
+    </div>
+    <button mat-flat-button routerLink="/products/create" class="create-button">
+      <mat-icon>add_circle</mat-icon>
+      Add New Product
+    </button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="products-container">
+    <!-- LOADING STATE -->
+    <div *ngIf="isLoading" class="state-container loading-state">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading products...</p>
+    </div>
+
+    <!-- ERROR STATE -->
+    <div *ngIf="!isLoading && error" class="state-container error-state">
+      <div class="error-icon">⚠️</div>
+      <h3>Unable to Load Products</h3>
+      <p class="error-text">{{ error }}</p>
+      <button mat-stroked-button (click)="loadProducts()" class="retry-btn">
+        <mat-icon>refresh</mat-icon>
+        Try Again
+      </button>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="!isLoading && !error && products.length === 0" class="state-container empty-state">
+      <div class="empty-icon">📦</div>
+      <h3>No Products Yet</h3>
+      <p>Start building your catalog by adding your first product</p>
+      <button mat-flat-button routerLink="/products/create" class="empty-button">
+        <mat-icon>add</mat-icon>
+        Create Your First Product
+      </button>
+    </div>
+
+    <!-- PRODUCTS GRID -->
+    <div *ngIf="!isLoading && !error && products.length > 0" class="products-grid">
+      <div class="product-card" *ngFor="let product of products">
+        <div class="product-header">
+          <div class="product-badge">📦</div>
+          <div class="product-name-section">
+            <h3 class="product-name">{{ product.name }}</h3>
+            <span class="product-id">ID: {{ product.id }}</span>
+          </div>
+        </div>
+
+        <div class="product-body">
+          <div class="price-section">
+            <span class="price-label">Price</span>
+            <span class="price-value">{{ product.price | currency }}</span>
+          </div>
+        </div>
+
+        <div class="product-footer">
+          <button 
+            mat-icon-button
+            matTooltip="Edit this product"
+            (click)="editProduct(product)"
+            class="action-btn edit-btn"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button 
+            mat-icon-button
+            matTooltip="Delete this product"
+            color="warn"
+            (click)="deleteProduct(product)"
+            class="action-btn delete-btn"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCT COUNT -->
+    <div *ngIf="!isLoading && !error && products.length > 0" class="product-count">
+      Showing <strong>{{ products.length }}</strong> product{{ products.length !== 1 ? 's' : '' }}
+    </div>
+  </div>
+</div>

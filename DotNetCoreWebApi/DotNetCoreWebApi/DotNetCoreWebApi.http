@@ -1,0 +1,46 @@
+@DotNetCoreWebApi_HostAddress = https://localhost:7020
+
+### WeatherForecast - Get all
+GET {{DotNetCoreWebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+### VegProducts - Get all products
+GET {{DotNetCoreWebApi_HostAddress}}/api/vegproducts
+Accept: application/json
+
+###
+
+### VegProducts - Get product by ID
+GET {{DotNetCoreWebApi_HostAddress}}/api/vegproducts/1
+Accept: application/json
+
+###
+
+### VegProducts - Create new product
+POST {{DotNetCoreWebApi_HostAddress}}/api/vegproducts
+Content-Type: application/json
+
+{
+  "name": "Tomato",
+  "price": 2.50
+}
+
+###
+
+### VegProducts - Update product
+PUT {{DotNetCoreWebApi_HostAddress}}/api/vegproducts/1
+Content-Type: application/json
+
+{
+  "name": "Carrot",
+  "price": 3.00
+}
+
+###
+
+### VegProducts - Delete product
+DELETE {{DotNetCoreWebApi_HostAddress}}/api/vegproducts/1
+
+###

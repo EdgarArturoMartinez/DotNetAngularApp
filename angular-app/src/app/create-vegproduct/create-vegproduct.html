@@ -1,0 +1,48 @@
+<div class="form-wrapper">
+  <div class="form-header">
+    <div>
+      <h2 class="form-title">Create New Product</h2>
+      <p class="form-subtitle">Add a new vegetarian product to your catalog</p>
+    </div>
+  </div>
+
+  <div class="form-container">
+    <form [formGroup]="vegProductForm" (ngSubmit)="saveChanges()" class="product-form">
+      <div class="form-field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Product Name</mat-label>
+          <input matInput formControlName="name" placeholder="e.g., Organic Carrots" type="text">
+          <mat-icon matSuffix>local_offer</mat-icon>
+          <mat-error *ngIf="vegProductForm.get('name')?.hasError('required')">
+            Product name is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Price (USD)</mat-label>
+          <input matInput formControlName="price" type="number" placeholder="0.00" (blur)="formatPrice()" min="0" step="0.01">
+          <mat-icon matSuffix>attach_money</mat-icon>
+          <mat-hint *ngIf="vegProductForm.get('price')?.value">
+            Your price: {{ (vegProductForm.get('price')?.value | currency) || '$0.00' }}
+          </mat-hint>
+          <mat-error *ngIf="vegProductForm.get('price')?.hasError('required')">
+            Price is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-actions">
+        <button mat-flat-button type="submit" class="submit-btn">
+          <mat-icon>check_circle</mat-icon>
+          Create Product
+        </button>
+        <a mat-stroked-button routerLink="/products" class="cancel-btn">
+          <mat-icon>close</mat-icon>
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

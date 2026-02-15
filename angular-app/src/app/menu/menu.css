@@ -1,0 +1,189 @@
+:host {
+  display: block;
+}
+
+.navbar {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0 !important;
+  height: auto !important;
+}
+
+.navbar-content {
+  display: flex;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  width: 100%;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: fit-content;
+}
+
+.brand-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.app-title {
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+}
+
+.brand-tagline {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-left: 8px;
+  padding-left: 8px;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.navbar-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.nav-action {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.nav-action:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.nav-action.active {
+  color: white;
+  background-color: #4caf50;
+  font-weight: 600;
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.nav-action-btn {
+  color: rgba(255, 255, 255, 0.85) !important;
+  transition: all 0.3s ease !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-action-btn:hover {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar-content {
+    padding: 12px 16px;
+  }
+
+  .app-title {
+    font-size: 20px;
+  }
+
+  .brand-tagline {
+    display: none;
+  }
+
+  .nav-action span {
+    display: none;
+  }
+
+  .navbar-actions {
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-icon {
+    font-size: 24px;
+  }
+
+  .app-title {
+    font-size: 18px;
+  }
+}
+
+.nav-action.active:hover {
+  background-color: rgba(76, 175, 80, 1);
+}
+
+mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar-content {
+    padding: 0 16px;
+  }
+
+  .app-title {
+    font-size: 18px;
+  }
+
+  .navbar-menu {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: flex;
+    margin-right: 12px;
+  }
+
+  .navbar-actions {
+    gap: 4px;
+  }
+
+  .nav-action span {
+    display: none;
+  }
+
+  .nav-action {
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-content {
+    padding: 0 12px;
+  }
+
+  .app-title {
+    font-size: 16px;
+  }
+}
