@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { VegProductCreation } from './vegproduct.models';
 import { environment } from '../environments/environment';
+import { VegCategory } from './vegcategory';  
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +18,11 @@ export class Vegproduct {
   }
 
   public getVegproducts() {
-    return this.http.get<any[]>(this.apiUrl);
+    return this.http.get<VegProduct[]>(this.apiUrl);
+  }
+
+  public getVegproductById(id: number) {
+    return this.http.get<VegProduct>(`${this.apiUrl}/${id}`);
   }
 
   public deleteVegproduct(id: number) {
@@ -27,4 +32,14 @@ export class Vegproduct {
   public updateVegproduct(id: number, vegProduct: VegProductCreation) {
     return this.http.put(`${this.apiUrl}/${id}`, vegProduct);
   }
+}
+
+// VegProduct interface matching backend API response
+export interface VegProduct {
+  id: number;
+  name: string;
+  price: number;
+  description?: string;
+  idCategory?: number;
+  vegCategory?: VegCategory;
 }

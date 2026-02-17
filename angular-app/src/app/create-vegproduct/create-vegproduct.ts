@@ -1,31 +1,60 @@
-import { Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject, OnInit } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatHint } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { Vegproduct } from '../vegproduct';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
+import { VegCategoryService } from '../vegcategory.service';
+import { VegCategory } from '../vegcategory';
 
 @Component({
   selector: 'app-create-vegproduct',
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, RouterLink, MatSnackBarModule, CommonModule, MatHint, MatIconModule],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, RouterLink, MatSnackBarModule, CommonModule, MatHint, MatIconModule],
   templateUrl: './create-vegproduct.html',
   styleUrl: './create-vegproduct.css',
 })
-export class CreateVegproduct {
+export class CreateVegproduct implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   vegProduct = inject(Vegproduct);
+  vegCategoryService = inject(VegCategoryService);
   router = inject(Router);
   snackBar = inject(MatSnackBar);
 
+  categories: VegCategory[] = [];
+
   vegProductForm = this.formBuilder.group({
-    name: [''],
-    price: ['']
+    name: ['', Validators.required],
+    price: ['', Validators.required],
+    idCategory: [null as number | null]
   });
+
+  ngOnInit() {
+    this.loadCategories();
+  }
+
+  loadCategories() {
+    this.vegCategoryService.getVegcategories().subscribe({
+      next: (data) => {
+        // Normalize category IDs in case API returns different property names
+        this.categories = data.map(cat => {
+          if (!cat.idCategory && ((cat as any).Id || (cat as any).id)) {
+            cat.idCategory = (cat as any).Id || (cat as any).id;
+          }
+          return cat;
+        });
+        console.log('Categories loaded for dropdown:', this.categories);
+      },
+      error: (error) => {
+        console.error('Error loading categories:', error);
+      }
+    });
+  }
 
   formatPrice() {
     const priceField = this.vegProductForm.get('price');
@@ -42,7 +71,8 @@ export class CreateVegproduct {
       const formValue = this.vegProductForm.value;
       const vegProductData: any = {
         name: formValue.name,
-        price: parseFloat(formValue.price || '0')
+        price: parseFloat(formValue.price || '0'),
+        idCategory: formValue.idCategory || null
       };
       
       this.vegProduct.createVegproduct(vegProductData).subscribe({

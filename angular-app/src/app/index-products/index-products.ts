@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,6 +13,7 @@ import { Vegproduct } from '../vegproduct';
   imports: [MatButtonModule, RouterLink, MatIconModule, CommonModule, MatProgressSpinnerModule, MatTooltipModule, MatSnackBarModule],
   templateUrl: './index-products.html',
   styleUrl: './index-products.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IndexProducts implements OnInit {
   vegproductService = inject(Vegproduct);
@@ -34,23 +35,42 @@ export class IndexProducts implements OnInit {
     
     this.vegproductService.getVegproducts().subscribe({
       next: (data: any) => {
-        this.products = Array.isArray(data) ? data : [];
+        // Ensure each product has a valid ID property
+        this.products = Array.isArray(data) ? data.map(product => {
+          // Handle both 'id' and 'Id' or 'idVegproduct' property names from API
+          if (!product.id && (product.Id || product.idVegproduct)) {
+            product.id = product.Id || product.idVegproduct;
+          }
+          return product;
+        }) : [];
+        console.log('Products loaded:', this.products);
         this.isLoading = false;
-        
-        // Force template update
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       },
       error: (error: any) => {
         this.error = 'Failed to load products: ' + (error.message || error.statusText || 'Unknown');
         this.isLoading = false;
-        this.cdr.detectChanges();
+        this.cdr.markForCheck();
       }
     });
   }
 
   editProduct(product: any) {
     // Navigate to edit page with product ID
-    this.router.navigate(['/products/edit', product.id]);
+    // Handle both 'id' and potential API response variations
+    const productId = product.id || product.idVegproduct || product.Id;
+    
+    if (!productId) {
+      this.snackBar.open('Error: Product ID not found. Please refresh and try again.', 'Close', {
+        duration: 5000,
+        horizontalPosition: 'end',
+        verticalPosition: 'bottom',
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+    
+    this.router.navigate(['/products/edit', productId]);
   }
 
   deleteProduct(product: any) {

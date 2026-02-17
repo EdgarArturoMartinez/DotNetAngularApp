@@ -38,8 +38,21 @@
         </mat-form-field>
       </div>
 
+      <div class="form-field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Category</mat-label>
+          <mat-select formControlName="idCategory" placeholder="Select a category">
+            <mat-option [value]="null">None</mat-option>
+            <mat-option *ngFor="let category of categories" [value]="category.idCategory">
+              {{ category.categoryName }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix>category</mat-icon>
+        </mat-form-field>
+      </div>
+
       <div class="form-actions">
-        <button mat-flat-button type="submit" class="submit-btn">
+        <button mat-flat-button type="submit" class="submit-btn" [disabled]="!vegProductForm.valid">
           <mat-icon>save</mat-icon>
           Update Product
         </button>

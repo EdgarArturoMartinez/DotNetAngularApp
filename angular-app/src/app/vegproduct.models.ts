@@ -1,4 +1,7 @@
 export interface VegProductCreation{
+    id?: number;
     name: string;
-    price: number;    
+    price: number;
+    description?: string;
+    idCategory?: number | null;
 }

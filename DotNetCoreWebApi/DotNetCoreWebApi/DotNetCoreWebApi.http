@@ -24,7 +24,9 @@ Content-Type: application/json
 
 {
   "name": "Tomato",
-  "price": 2.50
+  "description": "Fresh red tomatoes",
+  "price": 2.50,
+  "idCategory": 1
 }
 
 ###
@@ -34,13 +36,51 @@ PUT {{DotNetCoreWebApi_HostAddress}}/api/vegproducts/1
 Content-Type: application/json
 
 {
+  "id": 1,
   "name": "Carrot",
-  "price": 3.00
+  "description": "Organic carrots",
+  "price": 3.00,
+  "idCategory": 1
 }
 
 ###
 
 ### VegProducts - Delete product
 DELETE {{DotNetCoreWebApi_HostAddress}}/api/vegproducts/1
+
+###
+
+### VegCategories - Get all categories
+GET {{DotNetCoreWebApi_HostAddress}}/api/vegcategories
+Accept: application/json
+
+###
+
+### VegCategories - Create new category
+POST {{DotNetCoreWebApi_HostAddress}}/api/vegcategories
+Content-Type: application/json
+
+{
+  "categoryName": "Vegetables",
+  "description": "Fresh vegetables"
+}
+
+###
+
+### VegCategories - Update category
+PUT {{DotNetCoreWebApi_HostAddress}}/api/vegcategories/1
+Content-Type: application/json
+
+{
+  "idCategory": 1,
+  "categoryName": "Organic Vegetables",
+  "description": "Fresh organic vegetables",
+  "createdAt": "2024-01-01T00:00:00"
+}
+
+###
+
+### VegCategories - Delete category
+DELETE {{DotNetCoreWebApi_HostAddress}}/api/vegcategories/1
 
 ###

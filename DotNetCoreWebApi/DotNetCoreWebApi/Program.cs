@@ -1,22 +1,35 @@
 using DotNetCoreWebApi.Application.DBContext;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var corsOrigins = builder.Configuration.GetValue<string>("CorsOrigins");
+var corsOrigins = builder.Configuration.GetSection("CorsOrigins").Get<string[]>();
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        if (string.IsNullOrEmpty(corsOrigins) || corsOrigins == "*")
+        if (corsOrigins == null || corsOrigins.Length == 0)
+        {
+            // If no origins specified, allow any origin for development
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        }
+        else if (corsOrigins.Length == 1 && corsOrigins[0] == "*")
         {
             policy.AllowAnyOrigin()
                   .AllowAnyMethod()
@@ -24,10 +37,10 @@ builder.Services.AddCors(options =>
         }
         else
         {
-            var allowedOrigins = corsOrigins.Split(",");
-            policy.WithOrigins(allowedOrigins)
+            policy.WithOrigins(corsOrigins)
                   .AllowAnyMethod()
-                  .AllowAnyHeader();
+                  .AllowAnyHeader()
+                  .AllowCredentials();
         }
     });
 });

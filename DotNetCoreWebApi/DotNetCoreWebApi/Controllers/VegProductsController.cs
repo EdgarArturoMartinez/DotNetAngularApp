@@ -1,5 +1,7 @@
 ﻿using DotNetCoreWebApi.Application.DBContext;
 using DotNetCoreWebApi.Application.Entities;
+using DotNetCoreWebApi.DTOs;
+using DotNetCoreWebApi.Migrations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
@@ -15,23 +17,33 @@ namespace DotNetCoreWebApi.Controllers
             this.context = context;
         }
 
-        //[HttpGet]
-        //public async Task<ActionResult<List<VegProducts>>> GetAsync()
-        //{
-        //    var vegProducts = await context.VegProducts.ToListAsync();
-        //    return vegProducts.Select(p => new VegProducts
-        //    {
-        //        Id = p.Id,
-        //        Name = p.Name,
-        //        Price = p.Price
-        //    }).ToList();
-        //}
-
         [HttpGet]
-        public async Task<ActionResult<List<VegProducts>>> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<VegProductDto>>> GetAllAsync()
         {
-            return await context.VegProducts.ToListAsync();
+            var products = await context.VegProducts
+                .Include(p => p.VegCategory)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var productDtos = products.Select(p => new VegProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
+                Description = p.Description,
+                IdCategory = p.IdCategory,
+                VegCategory = p.VegCategory == null ? null : new VegCategoryBasicDto
+                {
+                    IdCategory = p.VegCategory.IdCategory,
+                    CategoryName = p.VegCategory.CategoryName,
+                    Description = p.VegCategory.Description
+                }
+            }).ToList();
+
+            return Ok(productDtos);
         }
+
+
 
         //[HttpGet]
         //public async Task<List<VegProducts>> GetAsync()
@@ -46,34 +58,79 @@ namespace DotNetCoreWebApi.Controllers
         //}
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<VegProducts>> GetByIdAsync(int id)
+        public async Task<ActionResult<VegProductDto>> GetByIdAsync(int id)
         {
-            var vegProduct = await context.VegProducts.FindAsync(id);
+            var vegProduct = await context.VegProducts
+                .Include(p => p.VegCategory)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == id);
+            
             if (vegProduct == null)
                 return NotFound();
-            return vegProduct;
+
+            var dto = new VegProductDto
+            {
+                Id = vegProduct.Id,
+                Name = vegProduct.Name,
+                Price = vegProduct.Price,
+                Description = vegProduct.Description,
+                IdCategory = vegProduct.IdCategory,
+                VegCategory = vegProduct.VegCategory == null ? null : new VegCategoryBasicDto
+                {
+                    IdCategory = vegProduct.VegCategory.IdCategory,
+                    CategoryName = vegProduct.VegCategory.CategoryName,
+                    Description = vegProduct.VegCategory.Description
+                }
+            };
+
+            return dto;
         }
+
+
 
 
         [HttpPost]
-        public async Task<ActionResult<VegProducts>> CreateAsync([FromBody] VegProducts vegProduct)
+        public async Task<ActionResult<Application.Entities.VegProducts>> CreateAsync([FromBody] Application.Entities.VegProducts vegProduct)
         {
             context.VegProducts.Add(vegProduct);
             await context.SaveChangesAsync();
-            return Ok(vegProduct);  // Simple 200 OK response
+            return Ok(vegProduct);
         }
 
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(int id, [FromBody] VegProducts vegProduct)
-        {
-            var existing = await context.VegProducts.FindAsync(id);
-            if (existing == null) return NotFound();
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> UpdateAsync(int id, [FromBody] Application.Entities.VegProducts vegProduct)
+        //{
+        //    var existing = await context.VegProducts.FindAsync(id);
+        //    if (existing == null) return NotFound();
 
-            existing.Name = vegProduct.Name;
-            existing.Price = vegProduct.Price;
+        //    existing.Name = vegProduct.Name;
+        //    existing.Price = vegProduct.Price;
+        //    await context.SaveChangesAsync();
+        //    return Ok(existing);
+        //}
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutVegproduct(int id, [FromBody] Application.Entities.VegProducts vegproduct)
+        {
+            if (id != vegproduct.Id)
+                return BadRequest("ID mismatch");
+
+            if (string.IsNullOrWhiteSpace(vegproduct.Name))
+                return BadRequest("Product name is required");
+
+            var existingProduct = await context.VegProducts.FindAsync(id);
+            if (existingProduct == null)
+                return NotFound();
+
+            // Update only the fields that should be updated
+            existingProduct.Name = vegproduct.Name;
+            existingProduct.Price = vegproduct.Price;
+            existingProduct.Description = vegproduct.Description;
+            existingProduct.IdCategory = vegproduct.IdCategory == 0 ? null : vegproduct.IdCategory;
+
             await context.SaveChangesAsync();
-            return Ok(existing);
+            return NoContent();
         }
 
 
