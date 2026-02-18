@@ -552,10 +552,15 @@
 
   .controls-bar {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .search-section {
     min-width: 100%;
+  }
+
+  .controls-section {
+    justify-content: space-between;
   }
 }
 
@@ -572,6 +577,16 @@
   .cards-grid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 16px;
+  }
+
+  /* Make table scrollable horizontally on tablet */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .data-table {
+    min-width: 600px;
   }
 
   .data-row td {
@@ -617,12 +632,54 @@
   .field-value {
     font-size: 13px;
   }
+
+  .records-info {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
 }
 
 @media (max-width: 480px) {
   .cards-grid {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+
+  .controls-bar {
+    padding: 12px;
+  }
+
+  .controls-section {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .search-section {
+    min-width: 100%;
+  }
+
+  .search-field {
+    font-size: 14px;
+  }
+
+  /* Better table experience on mobile */
+  .table-container {
+    border-radius: 8px;
+  }
+
+  .data-table {
+    min-width: 500px;
+    font-size: 12px;
+  }
+
+  .column-header {
+    padding: 10px 6px;
+    font-size: 11px;
+  }
+
+  .data-row td {
+    padding: 10px 6px;
+    font-size: 12px;
   }
 
   .card-header {
@@ -636,6 +693,7 @@
 
   .card-footer {
     padding: 10px 12px;
+    flex-wrap: wrap;
   }
 
   .card-title {
@@ -646,13 +704,44 @@
     font-size: 12px;
   }
 
+  .field-label {
+    font-size: 11px;
+  }
+
   .card-footer .action-button {
     width: 36px;
     height: 36px;
   }
 
+  .view-toggle-btn,
+  .reload-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0 !important;
+    min-width: 40px !important;
+  }
+
+  .view-toggle-btn span,
+  .reload-btn span {
+    display: none;
+  }
+
+  .records-info {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
   ::ng-deep .mat-mdc-paginator-container {
     flex-direction: column;
     gap: 10px;
+    padding: 12px !important;
+  }
+
+  ::ng-deep .mat-mdc-paginator-range-actions {
+    justify-content: center;
+  }
+
+  ::ng-deep .mat-mdc-paginator-page-size {
+    margin-right: 0 !important;
   }
 }

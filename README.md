@@ -28,11 +28,12 @@ cd angular-app
 npm start
 ```
 
-Frontend will run on: `http://localhost:4200`
+Frontend will run on: `http://localhost:4200` (or `http://localhost:4201` if port 4200 is in use)
 
 #### 3. Access Application
 
-Open browser to http://localhost:4200
+**Public eCommerce Site:** Open browser to `http://localhost:4200/`  
+**Admin Panel:** Navigate to `http://localhost:4200/admin`
 
 ---
 
@@ -41,16 +42,52 @@ Open browser to http://localhost:4200
 ```
 ├── DotNetCoreWebApi/          # .NET 8 Web API
 │   ├── Application/           # Business logic and entities
+│   │   ├── Entities/          # Domain models (VegProducts, VegCategory, etc.)
+│   │   ├── Interfaces/        # Service and repository interfaces
+│   │   ├── Services/          # Business logic implementation
+│   │   └── DBContext/         # Entity Framework DbContext
 │   ├── Infrastructure/        # Data access repositories
 │   ├── Controllers/           # API endpoints
-│   └── DTOs/                  # Data transfer objects
+│   ├── DTOs/                  # Data transfer objects
+│   └── Migrations/            # EF Core database migrations
 ├── angular-app/               # Angular 19 frontend
 │   ├── src/app/
+│   │   ├── home/              # Public eCommerce landing page
+│   │   ├── landing/           # Admin dashboard
+│   │   ├── menu/              # Admin navigation menu
+│   │   ├── index-products/    # Product management (admin)
+│   │   ├── index-vegcategories/ # Category management (admin)
+│   │   ├── create-vegproduct/ # Create product form (admin)
+│   │   ├── edit-vegproduct/   # Edit product form (admin)
+│   │   ├── create-vegcategory/ # Create category form (admin)
+│   │   ├── edit-vegcategory/  # Edit category form (admin)
 │   │   ├── features/          # Feature modules with services
-│   │   ├── shared/            # Shared models and services
-│   │   └── [components]/      # UI components
-└── ARCHITECTURE.md            # Complete architecture documentation
+│   │   ├── shared/            # Shared models, services, and components
+│   │   │   ├── components/    # Reusable UI components
+│   │   │   │   └── generic-data-table/ # Reusable data table with dual views
+│   │   │   └── models/        # TypeScript interfaces
+│   │   └── [other components]
+└── ARCHITECTURE.md            # Complete architecture documentation with scenarios
 ```
+
+### Routing Structure
+
+The application uses a clear separation between public and admin routes:
+
+**Public Routes (No authentication required):**
+- `/` - eCommerce landing page with featured products and categories
+- Future: `/shop`, `/products/:id`, `/cart`, `/checkout`
+
+**Admin Routes (Admin panel for inventory management):**
+- `/admin` - Dashboard with statistics and insights
+- `/admin/products` - Product management (list, create, edit, delete)
+- `/admin/categories` - Category management
+- `/admin/reviews` - Review management (example from Scenario 2)
+
+**Navigation Behavior:**
+- Admin menu only appears on `/admin/*` routes
+- Public pages have clean, distraction-free layout
+- Old routes automatically redirect to new `/admin` prefixed routes
 
 ---
 
@@ -78,9 +115,53 @@ Open browser to http://localhost:4200
 
 ---
 
+## 🎯 Common Development Scenarios
+
+This project includes detailed step-by-step guides for common development tasks. See [ARCHITECTURE.md](ARCHITECTURE.md) for complete instructions:
+
+### Scenario 1: Adding a New Field to an Existing Table
+
+**Use case:** You want to add a new property (e.g., `ImageUrl`) to an existing entity like `VegProducts`.
+
+**What you'll learn:**
+- Update entity class and DTOs
+- Modify service layer mappings
+- Create and apply database migration
+- Update TypeScript interfaces
+- Add form fields to create/edit components
+- Display new field in data table
+
+**📍 Location:** [ARCHITECTURE.md - Scenario 1](ARCHITECTURE.md#scenario-1-adding-a-new-field-to-existing-entity-vegproducts)
+
+---
+
+### Scenario 2: Creating a New Entity with Foreign Key to VegProducts
+
+**Use case:** You want to create a completely new entity (e.g., `ProductReview`) that references `VegProducts` with a foreign key relationship.
+
+**What you'll learn:**
+- Create complete entity structure (8 backend files)
+- Configure foreign key relationships in DbContext
+- Set up repository and service layers
+- Create controller with all CRUD endpoints
+- Register services in dependency injection
+- Build complete Angular CRUD interface (index, create, edit components)
+- Use generic-data-table component
+- Add routes with `/admin` prefix
+- Handle dropdown selection for foreign keys
+- Test cascade delete behavior
+
+**📍 Location:** [ARCHITECTURE.md - Scenario 2](ARCHITECTURE.md#scenario-2-creating-new-entity-with-foreign-key-to-vegproducts)
+
+---
+
 ## 📚 Documentation
 
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Complete architecture guide and adding new entities
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Complete architecture guide with detailed scenarios:
+  - **Scenario 1:** Adding a new field to an existing entity (VegProducts) - Step-by-step guide for adding properties
+  - **Scenario 2:** Creating a new entity with foreign key relationship to VegProducts - Complete walkthrough for new tables
+- **[GENERIC-DATA-TABLE-GUIDE.md](GENERIC-DATA-TABLE-GUIDE.md)** - Reusable data table component documentation
+- **[QUICK-START-DATA-TABLE.md](QUICK-START-DATA-TABLE.md)** - Quick start guide for using the generic data table
 - **[angular-app/README.md](angular-app/README.md)** - Angular-specific documentation
 
 ---

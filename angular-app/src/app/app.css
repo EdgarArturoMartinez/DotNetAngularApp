@@ -1,5 +1,27 @@
+/* Admin Container - with padding and max-width */
 .container {
     margin: 0 auto;
     padding: 1rem;
     max-width: 1200px;
+}
+
+/* Public Container - full width, no padding (for eCommerce landing page) */
+.container.public-container {
+    padding: 0;
+    max-width: none;
+    margin: 0;
+}
+
+/* Responsive Container */
+@media (max-width: 768px) {
+    .container {
+        padding: 0.75rem;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0.5rem;
+    }
 }

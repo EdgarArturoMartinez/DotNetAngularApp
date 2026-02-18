@@ -103,39 +103,6 @@
   background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .navbar-content {
-    padding: 12px 16px;
-  }
-
-  .app-title {
-    font-size: 20px;
-  }
-
-  .brand-tagline {
-    display: none;
-  }
-
-  .nav-action span {
-    display: none;
-  }
-
-  .navbar-actions {
-    gap: 4px;
-  }
-}
-
-@media (max-width: 480px) {
-  .brand-icon {
-    font-size: 24px;
-  }
-
-  .app-title {
-    font-size: 18px;
-  }
-}
-
 .nav-action.active:hover {
   background-color: rgba(76, 175, 80, 1);
 }
@@ -146,14 +113,18 @@ mat-icon {
   height: 18px;
 }
 
-/* Responsive Design */
+/* Responsive Design - Consolidated */
 @media (max-width: 768px) {
   .navbar-content {
-    padding: 0 16px;
+    padding: 12px 16px;
   }
 
   .app-title {
     font-size: 18px;
+  }
+
+  .brand-tagline {
+    display: none;
   }
 
   .navbar-menu {
@@ -180,10 +151,24 @@ mat-icon {
 
 @media (max-width: 480px) {
   .navbar-content {
-    padding: 0 12px;
+    padding: 12px;
+  }
+
+  .brand-icon {
+    font-size: 24px;
   }
 
   .app-title {
     font-size: 16px;
+  }
+
+  .nav-action {
+    padding: 8px 10px;
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
   }
 }

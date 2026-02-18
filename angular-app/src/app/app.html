@@ -1,5 +1,6 @@
-<app-menu></app-menu>
+<!-- Admin Navigation Menu (only shown on admin routes) -->
+<app-menu *ngIf="isAdminRoute()"></app-menu>
 
-<div class="container">
+<div class="container" [class.public-container]="!isAdminRoute()">
   <router-outlet></router-outlet>
 </div>
