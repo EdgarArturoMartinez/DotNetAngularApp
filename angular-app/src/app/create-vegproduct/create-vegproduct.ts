@@ -8,14 +8,14 @@ import { MatHint } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { Vegproduct } from '../vegproduct';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { VegCategoryService } from '../vegcategory.service';
 import { VegCategory } from '../vegcategory';
+import { NotificationService } from '../shared/services/notification.service';
 
 @Component({
   selector: 'app-create-vegproduct',
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, RouterLink, MatSnackBarModule, CommonModule, MatHint, MatIconModule],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, RouterLink, CommonModule, MatHint, MatIconModule],
   templateUrl: './create-vegproduct.html',
   styleUrl: './create-vegproduct.css',
 })
@@ -24,7 +24,7 @@ export class CreateVegproduct implements OnInit {
   vegProduct = inject(Vegproduct);
   vegCategoryService = inject(VegCategoryService);
   router = inject(Router);
-  snackBar = inject(MatSnackBar);
+  notificationService = inject(NotificationService);
 
   categories: VegCategory[] = [];
 
@@ -74,21 +74,15 @@ export class CreateVegproduct implements OnInit {
       const vegProductData: any = {
         name: formValue.name,
         price: parseFloat(formValue.price || '0'),
+        description: formValue.description || '',
         stockQuantity: formValue.stockQuantity || 0,
         idCategory: formValue.idCategory || null
       };
       
       this.vegProduct.createVegproduct(vegProductData).subscribe({
         next: (response) => {
-          this.vegProductForm.reset();
-          
-          // Show success message
-          this.snackBar.open(`✓ Product "${formValue.name}" created successfully!`, 'Close', {
-            duration: 4000,
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom',
-            panelClass: ['success-snackbar']
-          });
+          const productName = formValue.name ?? undefined;
+          this.notificationService.created('Product', productName);
           
           // Navigate after 1 second
           setTimeout(() => {
@@ -109,21 +103,11 @@ export class CreateVegproduct implements OnInit {
             }
           }
           
-          this.snackBar.open(`✗ Error: ${errorMessage}`, 'Close', {
-            duration: 5000,
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom',
-            panelClass: ['error-snackbar']
-          });
+          this.notificationService.saveError('create', errorMessage);
         }
       });
     } else {
-      this.snackBar.open('Please fill in all fields correctly', 'Close', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'bottom',
-        panelClass: ['warn-snackbar']
-      });
+      this.notificationService.validationError();
     }
   }
 }

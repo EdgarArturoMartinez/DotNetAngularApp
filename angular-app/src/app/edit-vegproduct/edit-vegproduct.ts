@@ -9,14 +9,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Vegproduct } from '../vegproduct';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { VegCategoryService } from '../vegcategory.service';
 import { VegCategory } from '../vegcategory';
+import { NotificationService } from '../shared/services/notification.service';
 
 @Component({
   selector: 'app-edit-vegproduct',
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, RouterLink, MatSnackBarModule, CommonModule, MatHint, MatIconModule, MatProgressSpinnerModule],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, RouterLink, CommonModule, MatHint, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './edit-vegproduct.html',
   styleUrl: './edit-vegproduct.css',
 })
@@ -25,7 +25,7 @@ export class EditVegproduct implements OnInit {
   vegProduct = inject(Vegproduct);
   vegCategoryService = inject(VegCategoryService);
   router = inject(Router);
-  snackBar = inject(MatSnackBar);
+  notificationService = inject(NotificationService);
   activatedRoute = inject(ActivatedRoute);
   cdr = inject(ChangeDetectorRef);
 
@@ -57,22 +57,12 @@ export class EditVegproduct implements OnInit {
           this.loadProduct();
         } else {
           console.log('Invalid product ID format:', id);
-          this.snackBar.open('Invalid product ID', 'Close', {
-            duration: 3000,
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom',
-            panelClass: ['error-snackbar']
-          });
+          this.notificationService.error('Invalid product ID');
           this.router.navigate(['/products']);
         }
       } else {
         console.log('No ID found in route');
-        this.snackBar.open('Invalid product ID', 'Close', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'bottom',
-          panelClass: ['error-snackbar']
-        });
+        this.notificationService.error('Invalid product ID');
         this.router.navigate(['/products']);
       }
     });
@@ -136,12 +126,7 @@ export class EditVegproduct implements OnInit {
           errorMessage = error.error.message;
         }
 
-        this.snackBar.open(`✗ Error: ${errorMessage}`, 'Close', {
-          duration: 5000,
-          horizontalPosition: 'end',
-          verticalPosition: 'bottom',
-          panelClass: ['error-snackbar']
-        });
+        this.notificationService.error(errorMessage);
         
         this.isLoading = false;
         this.cdr.detectChanges();
@@ -175,12 +160,7 @@ export class EditVegproduct implements OnInit {
       // Ensure we have valid values
       if (!formValue.name || !formValue.price) {
         console.error('Name or price missing:', { name: formValue.name, price: formValue.price });
-        this.snackBar.open('Please fill in all required fields', 'Close', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'bottom',
-          panelClass: ['warn-snackbar']
-        });
+        this.notificationService.validationError('Please fill in all required fields');
         return;
       }
       
@@ -188,7 +168,7 @@ export class EditVegproduct implements OnInit {
         id: this.productId,
         name: String(formValue.name).trim(),
         price: parseFloat(String(formValue.price)),
-        description: '',
+        description: formValue.description || '',
         stockQuantity: formValue.stockQuantity || 0,
         idCategory: formValue.idCategory || null
       };
@@ -197,12 +177,8 @@ export class EditVegproduct implements OnInit {
       
       this.vegProduct.updateVegproduct(this.productId, vegProductData).subscribe({
         next: () => {
-          this.snackBar.open(`✓ Product "${formValue.name}" updated successfully!`, 'Close', {
-            duration: 4000,
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom',
-            panelClass: ['success-snackbar']
-          });
+          const productName = formValue.name ?? undefined;
+          this.notificationService.updated('Product', productName);
           
           setTimeout(() => {
             this.router.navigate(['/products']);
@@ -223,22 +199,12 @@ export class EditVegproduct implements OnInit {
             }
           }
           
-          this.snackBar.open(`✗ Error: ${errorMessage}`, 'Close', {
-            duration: 5000,
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom',
-            panelClass: ['error-snackbar']
-          });
+          this.notificationService.saveError('update', errorMessage);
         }
       });
     } else {
       console.log('Form invalid or no product ID');
-      this.snackBar.open('Please fill in all required fields correctly', 'Close', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'bottom',
-        panelClass: ['warn-snackbar']
-      });
+      this.notificationService.validationError();
     }
   }
 }

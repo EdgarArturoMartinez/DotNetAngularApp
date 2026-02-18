@@ -5,16 +5,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { VegCategoryService } from '../vegcategory.service';
 import { VegCategory } from '../vegcategory';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NotificationService } from '../shared/services/notification.service';
 
 @Component({
   selector: 'app-edit-vegcategory',
   standalone: true,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, RouterLink, MatSnackBarModule, CommonModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, RouterLink, CommonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './edit-vegcategory.html',
   styleUrl: './edit-vegcategory.css',
 })
@@ -23,7 +23,7 @@ export class EditVegcategory implements OnInit {
   private vegCategoryService = inject(VegCategoryService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private snackBar = inject(MatSnackBar);
+  private notificationService = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
 
   categoryId: number = 0;
@@ -46,11 +46,11 @@ export class EditVegcategory implements OnInit {
         this.loadCategory();
       } else {
         console.log('Invalid category ID format:', id);
-        this.snackBar.open('Invalid category ID', 'Close', { duration: 3000 });
+        this.notificationService.error('Invalid category ID');
         this.router.navigate(['/categories']);
       }
     } else {
-      this.snackBar.open('Invalid category ID', 'Close', { duration: 3000 });
+      this.notificationService.error('Invalid category ID');
       this.router.navigate(['/categories']);
     }
   }
@@ -105,7 +105,7 @@ export class EditVegcategory implements OnInit {
           errorMsg = `Error ${error.status}: ${error.message || 'Unknown error'}`;
         }
         
-        this.snackBar.open(errorMsg, 'Close', { duration: 6000 });
+        this.notificationService.error(errorMsg, 6000);
         this.isLoading = false;
         console.log('Error handled, isLoading set to false, navigating back...');
         setTimeout(() => {
@@ -126,12 +126,8 @@ export class EditVegcategory implements OnInit {
       
       this.vegCategoryService.updateVegcategory(this.categoryId, categoryData).subscribe({
         next: () => {
-          this.snackBar.open(`✓ Category "${formValue.categoryName}" updated successfully!`, 'Close', {
-            duration: 4000,
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom',
-            panelClass: ['success-snackbar']
-          });
+          const categoryName = formValue.categoryName ?? undefined;
+          this.notificationService.updated('Category', categoryName);
           
           setTimeout(() => {
             this.router.navigate(['/categories']);
@@ -151,12 +147,7 @@ export class EditVegcategory implements OnInit {
             }
           }
           
-          this.snackBar.open(`✗ Error: ${errorMessage}`, 'Close', {
-            duration: 5000,
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom',
-            panelClass: ['error-snackbar']
-          });
+          this.notificationService.saveError('update', errorMessage);
         }
       });
     }

@@ -5,14 +5,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { VegCategoryService } from '../vegcategory.service';
 import { VegCategory } from '../vegcategory';
+import { DialogService } from '../shared/services/dialog.service';
+import { NotificationService } from '../shared/services/notification.service';
 
 @Component({
   selector: 'app-index-vegcategories',
   standalone: true,
-  imports: [MatButtonModule, RouterLink, MatIconModule, CommonModule, MatProgressSpinnerModule, MatTooltipModule, MatSnackBarModule],
+  imports: [MatButtonModule, RouterLink, MatIconModule, CommonModule, MatProgressSpinnerModule, MatTooltipModule],
   templateUrl: './index-vegcategories.html',
   styleUrl: './index-vegcategories.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,7 +22,8 @@ export class IndexVegcategories implements OnInit {
   vegCategoryService = inject(VegCategoryService);
   cdr = inject(ChangeDetectorRef);
   router = inject(Router);
-  snackBar = inject(MatSnackBar);
+  dialogService = inject(DialogService);
+  notificationService = inject(NotificationService);
   categories: VegCategory[] = [];
   isLoading = false;
   error = '';
@@ -68,12 +70,7 @@ export class IndexVegcategories implements OnInit {
     const categoryId = category.idCategory || (category as any).id || (category as any).Id;
     
     if (!categoryId) {
-      this.snackBar.open('Error: Category ID not found. Please refresh and try again.', 'Close', {
-        duration: 5000,
-        horizontalPosition: 'end',
-        verticalPosition: 'bottom',
-        panelClass: ['error-snackbar']
-      });
+      this.notificationService.error('Category ID not found. Please refresh and try again.');
       return;
     }
     
@@ -81,27 +78,19 @@ export class IndexVegcategories implements OnInit {
   }
 
   deleteCategory(category: VegCategory) {
-    if (confirm(`Are you sure you want to delete "${category.categoryName}"?`)) {
-      this.vegCategoryService.deleteVegcategory(category.idCategory).subscribe({
-        next: () => {
-          this.snackBar.open(`✓ Category "${category.categoryName}" deleted successfully!`, 'Close', {
-            duration: 3000,
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom',
-            panelClass: ['success-snackbar']
-          });
-          this.loadCategories();
-        },
-        error: (error) => {
-          let errorMessage = error.error?.message || error.statusText || 'Unknown error';
-          this.snackBar.open(`✗ Error deleting category: ${errorMessage}`, 'Close', {
-            duration: 5000,
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom',
-            panelClass: ['error-snackbar']
-          });
-        }
-      });
-    }
+    this.dialogService.confirmDelete('Category', category.categoryName).subscribe(confirmed => {
+      if (confirmed) {
+        this.vegCategoryService.deleteVegcategory(category.idCategory).subscribe({
+          next: () => {
+            this.notificationService.deleted('Category', category.categoryName);
+            this.loadCategories();
+          },
+          error: (error) => {
+            const errorMessage = error.error?.message || error.statusText || 'Unknown error';
+            this.notificationService.saveError('delete', errorMessage);
+          }
+        });
+      }
+    });
   }
 }

@@ -5,12 +5,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Vegproduct } from '../vegproduct';
+import { DialogService } from '../shared/services/dialog.service';
+import { NotificationService } from '../shared/services/notification.service';
 
 @Component({
   selector: 'app-index-products',
-  imports: [MatButtonModule, RouterLink, MatIconModule, CommonModule, MatProgressSpinnerModule, MatTooltipModule, MatSnackBarModule],
+  imports: [MatButtonModule, RouterLink, MatIconModule, CommonModule, MatProgressSpinnerModule, MatTooltipModule],
   templateUrl: './index-products.html',
   styleUrl: './index-products.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,7 +20,8 @@ export class IndexProducts implements OnInit {
   vegproductService = inject(Vegproduct);
   cdr = inject(ChangeDetectorRef);
   router = inject(Router);
-  snackBar = inject(MatSnackBar);
+  dialogService = inject(DialogService);
+  notificationService = inject(NotificationService);
   products: any[] = [];
   isLoading = false;
   error = '';
@@ -62,12 +64,7 @@ export class IndexProducts implements OnInit {
     const productId = product.id || product.idVegproduct || product.Id;
     
     if (!productId) {
-      this.snackBar.open('Error: Product ID not found. Please refresh and try again.', 'Close', {
-        duration: 5000,
-        horizontalPosition: 'end',
-        verticalPosition: 'bottom',
-        panelClass: ['error-snackbar']
-      });
+      this.notificationService.error('Product ID not found. Please refresh and try again.');
       return;
     }
     
@@ -75,29 +72,19 @@ export class IndexProducts implements OnInit {
   }
 
   deleteProduct(product: any) {
-    // Confirm before deleting
-    if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
-      this.vegproductService.deleteVegproduct(product.id).subscribe({
-        next: (response) => {
-          this.snackBar.open(`✓ Product "${product.name}" deleted successfully!`, 'Close', {
-            duration: 3000,
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom',
-            panelClass: ['success-snackbar']
-          });
-          // Refresh the list
-          this.loadProducts();
-        },
-        error: (error) => {
-          let errorMessage = error.error?.message || error.statusText || 'Unknown error';
-          this.snackBar.open(`✗ Error deleting product: ${errorMessage}`, 'Close', {
-            duration: 5000,
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom',
-            panelClass: ['error-snackbar']
-          });
-        }
-      });
-    }
+    this.dialogService.confirmDelete('Product', product.name).subscribe(confirmed => {
+      if (confirmed) {
+        this.vegproductService.deleteVegproduct(product.id).subscribe({
+          next: () => {
+            this.notificationService.deleted('Product', product.name);
+            this.loadProducts();
+          },
+          error: (error) => {
+            const errorMessage = error.error?.message || error.statusText || 'Unknown error';
+            this.notificationService.saveError('delete', errorMessage);
+          }
+        });
+      }
+    });
   }
 }

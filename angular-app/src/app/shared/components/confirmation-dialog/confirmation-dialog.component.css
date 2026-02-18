@@ -1,0 +1,127 @@
+.dialog-container {
+  width: 100%;
+  min-width: 400px;
+  max-width: 500px;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 4px 4px 0 0;
+}
+
+.dialog-header-delete {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+}
+
+.dialog-header-warning {
+  background: linear-gradient(135deg, #f5f7fa 0%, #fff3e0 100%);
+}
+
+.dialog-header-info {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e3f2fd 100%);
+}
+
+.dialog-header-success {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8f5e9 100%);
+}
+
+.dialog-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.08));
+}
+
+.icon-delete {
+  color: #667eea;
+}
+
+.icon-warning {
+  color: #ff9800;
+}
+
+.icon-info {
+  color: #2196f3;
+}
+
+.icon-success {
+  color: #4caf50;
+}
+
+.dialog-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  flex: 1;
+  color: #2c3e50;
+  letter-spacing: -0.5px;
+}
+
+.dialog-content {
+  padding: 24px;
+  min-height: 80px;
+}
+
+.dialog-message {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #7f8c8d;
+}
+
+.entity-name {
+  margin: 8px 0 0 0;
+  padding: 12px 16px;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #667eea;
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 6px;
+  color: #2c3e50;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.dialog-actions {
+  padding: 16px 24px 24px;
+  display: flex;
+  justify-content: flex-rgba(0, 0, 0, 0.05);
+}
+
+.cancel-button,
+.confirm-button {
+  min-width: 100px;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.cancel-button {
+  color: #7f8c8d;
+}
+
+.cancel-button:hover {
+  background-color: #f5f7fa;
+}
+
+.confirm-button {
+  transition: all 0.3s ease;
+}
+
+.confirm-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.confirm-button mat-icon,
+.cancel-button mat-icon {
+  margin-right: 4px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;icon-delete {
+    color: #ffb74d;
+  }
+}

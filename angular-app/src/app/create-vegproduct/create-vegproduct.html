@@ -35,6 +35,14 @@
 
       <div class="form-field">
         <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" placeholder="Enter product description" rows="4"></textarea>
+          <mat-icon matSuffix>description</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <mat-form-field appearance="outline" class="full-width">
           <mat-label>Category</mat-label>
           <mat-select formControlName="idCategory" placeholder="Select a category">
             <mat-option [value]="null">None</mat-option>

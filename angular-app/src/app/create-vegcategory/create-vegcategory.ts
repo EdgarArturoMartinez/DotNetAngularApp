@@ -5,15 +5,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { VegCategoryService } from '../vegcategory.service';
 import { VegCategory } from '../vegcategory';
+import { NotificationService } from '../shared/services/notification.service';
 
 @Component({
   selector: 'app-create-vegcategory',
   standalone: true,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, RouterLink, MatSnackBarModule, CommonModule, MatIconModule],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, RouterLink, CommonModule, MatIconModule],
   templateUrl: './create-vegcategory.html',
   styleUrl: './create-vegcategory.css',
 })
@@ -21,7 +21,7 @@ export class CreateVegcategory {
   private readonly formBuilder = inject(FormBuilder);
   private vegCategoryService = inject(VegCategoryService);
   private router = inject(Router);
-  private snackBar = inject(MatSnackBar);
+  private notificationService = inject(NotificationService);
 
   vegCategoryForm = this.formBuilder.group({
     categoryName: ['', Validators.required],
@@ -38,14 +38,8 @@ export class CreateVegcategory {
       
       this.vegCategoryService.createVegcategory(categoryData).subscribe({
         next: (response) => {
-          this.vegCategoryForm.reset();
-          
-          this.snackBar.open(`✓ Category "${formValue.categoryName}" created successfully!`, 'Close', {
-            duration: 4000,
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom',
-            panelClass: ['success-snackbar']
-          });
+          const categoryName = formValue.categoryName ?? undefined;
+          this.notificationService.created('Category', categoryName);
           
           setTimeout(() => {
             this.router.navigate(['/categories']);
@@ -71,21 +65,11 @@ export class CreateVegcategory {
             errorMessage = error.message;
           }
           
-          this.snackBar.open(`✗ Error: ${errorMessage}`, 'Close', {
-            duration: 8000,
-            horizontalPosition: 'end',
-            verticalPosition: 'bottom',
-            panelClass: ['error-snackbar']
-          });
+          this.notificationService.saveError('create', errorMessage);
         }
       });
     } else {
-      this.snackBar.open('Please fill in all required fields', 'Close', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'bottom',
-        panelClass: ['warn-snackbar']
-      });
+      this.notificationService.validationError();
     }
   }
 }
