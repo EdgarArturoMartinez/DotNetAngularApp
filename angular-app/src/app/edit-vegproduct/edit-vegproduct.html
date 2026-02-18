@@ -51,6 +51,17 @@
         </mat-form-field>
       </div>
 
+      <div class="form-field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Stock Quantity</mat-label>
+          <input matInput formControlName="stockQuantity" type="number" placeholder="e.g., 50">
+          <mat-icon matSuffix>inventory</mat-icon>
+          <mat-error *ngIf="vegProductForm.get('stockQuantity')?.hasError('required')">
+            Stock quantity is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
       <div class="form-actions">
         <button mat-flat-button type="submit" class="submit-btn" [disabled]="!vegProductForm.valid">
           <mat-icon>save</mat-icon>

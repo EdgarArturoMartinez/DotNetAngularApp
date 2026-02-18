@@ -36,6 +36,8 @@ export class EditVegproduct implements OnInit {
   vegProductForm = this.formBuilder.group({
     name: ['', Validators.required],
     price: ['', Validators.required],
+    description: [''],
+    stockQuantity: [0, Validators.required],
     idCategory: [null as number | null]
   });
 
@@ -106,14 +108,18 @@ export class EditVegproduct implements OnInit {
     this.vegProduct.getVegproductById(this.productId).subscribe({
       next: (product) => {
         console.log('SUCCESS! Product loaded:', product);
+        console.log('Product stockQuantity from API:', product.stockQuantity);
         
         this.vegProductForm.patchValue({
           name: product.name,
           price: product.price.toFixed(2),
+          description: product.description || '',
+          stockQuantity: product.stockQuantity || 0,
           idCategory: product.idCategory || null
         });
         
         console.log('Form populated with:', this.vegProductForm.value);
+        console.log('Form stockQuantity value:', this.vegProductForm.get('stockQuantity')?.value);
         
         this.isLoading = false;
         this.cdr.detectChanges();
@@ -183,6 +189,7 @@ export class EditVegproduct implements OnInit {
         name: String(formValue.name).trim(),
         price: parseFloat(String(formValue.price)),
         description: '',
+        stockQuantity: formValue.stockQuantity || 0,
         idCategory: formValue.idCategory || null
       };
       

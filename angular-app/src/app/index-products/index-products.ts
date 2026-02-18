@@ -44,6 +44,7 @@ export class IndexProducts implements OnInit {
           return product;
         }) : [];
         console.log('Products loaded:', this.products);
+        console.log('First product stockQuantity:', this.products[0]?.stockQuantity);
         this.isLoading = false;
         this.cdr.markForCheck();
       },

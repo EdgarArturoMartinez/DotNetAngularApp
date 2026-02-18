@@ -31,6 +31,8 @@ export class CreateVegproduct implements OnInit {
   vegProductForm = this.formBuilder.group({
     name: ['', Validators.required],
     price: ['', Validators.required],
+    description: [''],
+    stockQuantity: [0, Validators.required],
     idCategory: [null as number | null]
   });
 
@@ -72,6 +74,7 @@ export class CreateVegproduct implements OnInit {
       const vegProductData: any = {
         name: formValue.name,
         price: parseFloat(formValue.price || '0'),
+        stockQuantity: formValue.stockQuantity || 0,
         idCategory: formValue.idCategory || null
       };
       

@@ -1,125 +1,226 @@
-<div class="landing-container">
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="hero-content">
-      <div class="hero-text">
-        <h1 class="hero-title">Welcome to VegShop Admin</h1>
-        <p class="hero-subtitle">Manage your vegetarian products with ease</p>
-        <p class="hero-description">A modern, professional platform to manage and sell high-quality vegetarian products</p>
-        <a routerLink="/products" mat-flat-button class="hero-button">
-          <mat-icon>shopping_bag</mat-icon>
-          Go to Products
+<div class="dashboard-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="loading-state">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading dashboard...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error() && !isLoading()" class="error-state">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <p class="error-message">{{ error() }}</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!isLoading() && !error() && stats()" class="dashboard-content">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="hero-title">Welcome to VegShop Admin</h1>
+          <p class="hero-subtitle">Manage your vegetarian products with ease</p>
+          <p class="hero-description">A modern, professional platform to manage and sell high-quality vegetarian products</p>
+          <a routerLink="/products" mat-flat-button class="hero-button">
+            <mat-icon>shopping_bag</mat-icon>
+            Go to Products
+          </a>
+        </div>
+        <div class="hero-graphic">
+          <div class="graphic-element">🥕 🥦 🍅</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Header Section -->
+    <div class="dashboard-header">
+      <div class="header-content">
+        <h1 class="dashboard-title">Admin Dashboard</h1>
+        <p class="dashboard-subtitle">Real-time inventory and sales insights</p>
+      </div>
+      <div class="header-actions">
+        <a routerLink="/products" mat-raised-button color="primary">
+          <mat-icon>add_circle</mat-icon>
+          Add Product
         </a>
       </div>
-      <div class="hero-graphic">
-        <div class="graphic-element">🥕 🥦 🍅</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Dashboard Stats Section -->
-  <section class="stats-section">
-    <div class="stats-title">
-      <h2>Dashboard Overview</h2>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-          <mat-icon>shopping_bag</mat-icon>
-        </div>
-        <div class="stat-content">
-          <h3>Products</h3>
-          <p class="stat-value">{{ weathers().length }}</p>
-          <span class="stat-label">Total items in catalog</span>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);">
-          <mat-icon>trending_up</mat-icon>
-        </div>
-        <div class="stat-content">
-          <h3>Sales</h3>
-          <p class="stat-value">+12%</p>
-          <span class="stat-label">Growth this month</span>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e72 100%);">
-          <mat-icon>favorite</mat-icon>
-        </div>
-        <div class="stat-content">
-          <h3>Customer Reviews</h3>
-          <p class="stat-value">⭐ 4.8</p>
-          <span class="stat-label">Average rating</span>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);">
-          <mat-icon>people</mat-icon>
-        </div>
-        <div class="stat-content">
-          <h3>Customers</h3>
-          <p class="stat-value">324</p>
-          <span class="stat-label">Active users</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features Section -->
-  <section class="features-section">
-    <h2>Key Features</h2>
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">📦</div>
-        <h3>Easy Product Management</h3>
-        <p>Add, edit, and delete products with a simple and intuitive interface</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">💚</div>
-        <h3>100% Vegetarian</h3>
-        <p>Curated selection of premium vegetarian and vegan products</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🔒</div>
-        <h3>Secure & Reliable</h3>
-        <p>Enterprise-grade security to protect your business and customer data</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">📊</div>
-        <h3>Analytics</h3>
-        <p>Real-time insights into your sales and customer behavior</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Weather Data Section (Optional) -->
-  <section class="weather-section" *ngIf="!isLoading() && !error() && weathers().length > 0">
-    <h2>Current Weather Conditions</h2>
-    <div *ngIf="isLoading()" class="loading-spinner">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading weather data...</p>
     </div>
 
-    <div *ngIf="error()" class="error-message">
-      <mat-icon>warning</mat-icon>
-      <p>{{ error() }}</p>
-    </div>
-
-    <div *ngIf="!isLoading() && !error() && weathers().length > 0" class="weather-grid">
-      <div class="weather-card" *ngFor="let weather of weathers()">
-        <div class="weather-date">{{ weather.date | date:'MMM dd, yyyy' }}</div>
-        <div class="weather-icon">🌡️</div>
-        <div class="weather-temps">
-          <span class="temp">{{ weather.temperatureC }}°C</span>
-          <span class="temp-separator">/</span>
-          <span class="temp">{{ weather.temperatureF }}°F</span>
+    <!-- Key Metrics Section -->
+    <section class="metrics-section">
+      <div class="metric-card metric-primary">
+        <div class="card-header">
+          <div class="metric-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <mat-icon>category</mat-icon>
+          </div>
+          <span class="metric-label">Categories</span>
         </div>
-        <div class="weather-summary">{{ weather.summary }}</div>
+        <div class="card-body">
+          <div class="metric-value">{{ stats()?.totalCategories }}</div>
+          <div class="metric-description">Active product categories</div>
+        </div>
       </div>
-    </div>
-  </section>
+
+      <div class="metric-card metric-primary">
+        <div class="card-header">
+          <div class="metric-icon" style="background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);">
+            <mat-icon>inventory_2</mat-icon>
+          </div>
+          <span class="metric-label">Products</span>
+        </div>
+        <div class="card-body">
+          <div class="metric-value">{{ stats()?.totalProducts }}</div>
+          <div class="metric-description">Items in catalog</div>
+          <a routerLink="/products" class="metric-link">
+            <mat-icon>arrow_forward</mat-icon>
+            Manage Products
+          </a>
+        </div>
+      </div>
+
+      <div class="metric-card metric-primary">
+        <div class="card-header">
+          <div class="metric-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e72 100%);">
+            <mat-icon>storage</mat-icon>
+          </div>
+          <span class="metric-label">Total Stock</span>
+        </div>
+        <div class="card-body">
+          <div class="metric-value">{{ stats()?.totalStockQuantity }}</div>
+          <div class="metric-description">Units in inventory</div>
+        </div>
+      </div>
+
+      <div class="metric-card metric-primary">
+        <div class="card-header">
+          <div class="metric-icon" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);">
+            <mat-icon>monetization_on</mat-icon>
+          </div>
+          <span class="metric-label">Inventory Value</span>
+        </div>
+        <div class="card-body">
+          <div class="metric-value" style="font-size: 28px;">{{ stats()?.totalInventoryValue | currency }}</div>
+          <div class="metric-description">Total product value in stock</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Secondary Insights Section -->
+    <section class="insights-section">
+      <!-- Category Breakdown -->
+      <mat-card class="insight-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>pie_chart</mat-icon>
+            Category Breakdown
+          </mat-card-title>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+          <div class="category-list" *ngIf="stats()?.categoryBreakdown && stats()!.categoryBreakdown.length > 0">
+            <div class="category-item" *ngFor="let category of stats()!.categoryBreakdown">
+              <div class="category-info">
+                <h4 class="category-name">{{ category.categoryName }}</h4>
+                <span class="category-count">{{ category.productCount }} products</span>
+              </div>
+              <div class="category-value">
+                {{ category.totalValue | currency }}
+              </div>
+            </div>
+          </div>
+          <div class="empty-state" *ngIf="!stats()?.categoryBreakdown || stats()!.categoryBreakdown.length === 0">
+            <mat-icon>folder_open</mat-icon>
+            <p>No categories yet</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Top Products by Value -->
+      <mat-card class="insight-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>trending_up</mat-icon>
+            Top Products by Inventory Value
+          </mat-card-title>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+          <div class="product-list" *ngIf="stats()?.topProducts && stats()!.topProducts.length > 0">
+            <div class="product-item" *ngFor="let product of stats()!.topProducts; let i = index">
+              <div class="product-rank">
+                <span class="rank-badge">{{ i + 1 }}</span>
+              </div>
+              <div class="product-info">
+                <h4 class="product-name">{{ product.name }}</h4>
+                <span class="product-category">{{ product.categoryName || 'Uncategorized' }}</span>
+              </div>
+              <div class="product-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Stock:</span>
+                  <span class="stat-value">{{ product.stockQuantity }}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Value:</span>
+                  <span class="stat-value stat-bold">{{ product.totalValue | currency }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="empty-state" *ngIf="!stats()?.topProducts || stats()!.topProducts.length === 0">
+            <mat-icon>inventory</mat-icon>
+            <p>No products yet</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Low Stock Alert -->
+      <mat-card class="insight-card warning-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon class="warning-icon">warning</mat-icon>
+            Low Stock Alert
+          </mat-card-title>
+        </mat-card-header>
+        <mat-divider></mat-divider>
+        <mat-card-content>
+          <div class="product-list" *ngIf="stats()?.lowStockProducts && stats()!.lowStockProducts.length > 0">
+            <div class="product-item low-stock" *ngFor="let product of stats()!.lowStockProducts">
+              <div class="stock-gauge">
+                <div class="gauge-bar" [style.width.%]="product.stockQuantity * 10"></div>
+              </div>
+              <div class="product-info">
+                <h4 class="product-name">{{ product.name }}</h4>
+                <span class="product-category">{{ product.categoryName || 'Uncategorized' }}</span>
+              </div>
+              <div class="stock-badge">
+                {{ product.stockQuantity }} units
+              </div>
+            </div>
+            <div class="alert-footer">
+              <mat-icon>info</mat-icon>
+              <span>Reorder these items soon</span>
+            </div>
+          </div>
+          <div class="empty-state success" *ngIf="!stats()?.lowStockProducts || stats()!.lowStockProducts.length === 0">
+            <mat-icon>check_circle</mat-icon>
+            <p>All products have sufficient stock!</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions-section">
+      <h3 class="section-title">Quick Actions</h3>
+      <div class="action-buttons">
+        <a routerLink="/products" mat-raised-button color="primary" class="action-btn">
+          <mat-icon>list</mat-icon>
+          View All Products
+        </a>
+        <button mat-raised-button class="action-btn refresh-btn" (click)="refreshDashboard()">
+          <mat-icon>refresh</mat-icon>
+          Refresh Data
+        </button>
+      </div>
+    </section>
+  </div>
 </div>

@@ -3,5 +3,6 @@ export interface VegProductCreation{
     name: string;
     price: number;
     description?: string;
+    stockQuantity?: number;
     idCategory?: number | null;
 }

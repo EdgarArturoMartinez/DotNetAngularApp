@@ -40,6 +40,7 @@ export interface VegProduct {
   name: string;
   price: number;
   description?: string;
+  stockQuantity?: number;
   idCategory?: number;
   vegCategory?: VegCategory;
 }

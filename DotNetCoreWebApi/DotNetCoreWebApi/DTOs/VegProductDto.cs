@@ -6,6 +6,8 @@ public class VegProductDto
     public string Name { get; set; } = null!;
     public decimal Price { get; set; }
     public string? Description { get; set; }
+    public int StockQuantity { get; set; }
+
     public int? IdCategory { get; set; }
     public VegCategoryBasicDto? VegCategory { get; set; }
 }

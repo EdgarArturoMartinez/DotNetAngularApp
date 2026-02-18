@@ -31,6 +31,7 @@ namespace DotNetCoreWebApi.Controllers
                 Name = p.Name,
                 Price = p.Price,
                 Description = p.Description,
+                StockQuantity = p.StockQuantity,
                 IdCategory = p.IdCategory,
                 VegCategory = p.VegCategory == null ? null : new VegCategoryBasicDto
                 {
@@ -74,6 +75,7 @@ namespace DotNetCoreWebApi.Controllers
                 Name = vegProduct.Name,
                 Price = vegProduct.Price,
                 Description = vegProduct.Description,
+                StockQuantity = vegProduct.StockQuantity,
                 IdCategory = vegProduct.IdCategory,
                 VegCategory = vegProduct.VegCategory == null ? null : new VegCategoryBasicDto
                 {
@@ -127,6 +129,7 @@ namespace DotNetCoreWebApi.Controllers
             existingProduct.Name = vegproduct.Name;
             existingProduct.Price = vegproduct.Price;
             existingProduct.Description = vegproduct.Description;
+            existingProduct.StockQuantity = vegproduct.StockQuantity;
             existingProduct.IdCategory = vegproduct.IdCategory == 0 ? null : vegproduct.IdCategory;
 
             await context.SaveChangesAsync();
