@@ -30,8 +30,9 @@ export class CreateVegproduct implements OnInit {
 
   categories: VegCategory[] = [];
   
-  // Signal to track created product ID (for image upload)
-  createdProductId = signal<number | null>(null);
+  // Use a dummy product ID (0) for new products - image component handles this
+  tempProductId = signal<number>(0);
+  selectedImages = signal<File[]>([]);
 
   vegProductForm = this.formBuilder.group({
     name: ['', Validators.required],

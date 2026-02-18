@@ -63,6 +63,7 @@ builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
 builder.Services.AddScoped<IVegCategoryService, VegCategoryService>();
 builder.Services.AddScoped<IVegProductService, VegProductService>();
 builder.Services.AddScoped<IProductImageService, ProductImageService>();
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
 var app = builder.Build();
 
@@ -75,6 +76,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Serve static files from wwwroot (including images)
+app.UseStaticFiles();
 
 app.UseCors("AllowAngular");
 

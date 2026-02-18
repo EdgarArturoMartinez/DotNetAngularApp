@@ -7,7 +7,7 @@ import { ProductImage, ProductImageCreateUpdate, ImageValidationResult } from '.
   providedIn: 'root'
 })
 export class ProductImageService {
-  private apiUrl = 'http://localhost:5194/api'; // Update to your API URL
+  private apiUrl = 'https://localhost:7020/api'; // Backend API running on port 7020
 
   constructor(private http: HttpClient) { }
 
@@ -86,5 +86,20 @@ export class ProductImageService {
    */
   validateImage(productId: number, imageData: ProductImageCreateUpdate): Observable<ImageValidationResult> {
     return this.http.post<ImageValidationResult>(`${this.apiUrl}/products/${productId}/images/validate`, imageData);
+  }
+
+  /**
+   * Upload a product image file
+   */
+  uploadImageFile(productId: number, file: File, imageType: number, displayOrder: number = 0): Observable<ProductImage> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('imageType', imageType.toString());
+    formData.append('displayOrder', displayOrder.toString());
+
+    return this.http.post<ProductImage>(
+      `${this.apiUrl}/products/${productId}/images/upload`,
+      formData
+    );
   }
 }

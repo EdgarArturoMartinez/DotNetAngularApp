@@ -6,9 +6,13 @@
     </div>
   </div>
 
-  <!-- Product Form Section -->
-  <div class="form-container" *ngIf="!createdProductId()">
+  <div class="form-container">
     <form [formGroup]="vegProductForm" (ngSubmit)="saveChanges()" class="product-form">
+      <!-- Basic Product Information -->
+      <div class="form-section-header">
+        <h3>Product Information</h3>
+      </div>
+
       <div class="form-field">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Product Name</mat-label>
@@ -66,10 +70,25 @@
         </mat-form-field>
       </div>
 
+      <!-- Image Upload Section (INSIDE THE FORM) -->
+      <div class="image-section-divider"></div>
+
+      <div class="form-section-header">
+        <h3>Product Images</h3>
+        <span class="section-hint">(Optional but recommended for better sales)</span>
+      </div>
+
+      <app-product-image-upload 
+        [productId]="tempProductId()" 
+        [isInForm]="true"
+        (imagesUpdated)="onImagesUpdated($event)">
+      </app-product-image-upload>
+
+      <!-- Form Actions (AFTER IMAGES) -->
       <div class="form-actions">
         <button mat-flat-button type="submit" class="submit-btn" [disabled]="!vegProductForm.valid">
           <mat-icon>check_circle</mat-icon>
-          Create Product
+          Create Product & Save
         </button>
         <a mat-stroked-button routerLink="/products" class="cancel-btn">
           <mat-icon>close</mat-icon>
@@ -77,25 +96,5 @@
         </a>
       </div>
     </form>
-  </div>
-
-  <!-- Image Upload Section (shown after product is created) -->
-  <div class="image-upload-section" *ngIf="createdProductId()">
-    <div class="section-header">
-      <h3 class="section-title">Product Created Successfully! ✅</h3>
-      <p class="section-subtitle">Now add images to your product (optional but recommended for better sales)</p>
-    </div>
-    
-    <app-product-image-upload 
-      [productId]="createdProductId()!" 
-      (imagesUpdated)="onImagesUpdated($event)">
-    </app-product-image-upload>
-
-    <div class="section-actions">
-      <button mat-raised-button color="primary" routerLink="/products" class="continue-btn">
-        <mat-icon>arrow_forward</mat-icon>
-        Continue to Products
-      </button>
-    </div>
   </div>
 </div>

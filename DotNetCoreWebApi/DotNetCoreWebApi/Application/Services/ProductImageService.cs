@@ -12,11 +12,13 @@ public class ProductImageService : IProductImageService
 {
     private readonly IProductImageRepository _imageRepository;
     private readonly IRepository<VegProducts> _productRepository;
+    private readonly IFileUploadService _fileUploadService;
 
-    public ProductImageService(IProductImageRepository imageRepository, IRepository<VegProducts> productRepository)
+    public ProductImageService(IProductImageRepository imageRepository, IRepository<VegProducts> productRepository, IFileUploadService fileUploadService)
     {
         _imageRepository = imageRepository;
         _productRepository = productRepository;
+        _fileUploadService = fileUploadService;
     }
 
     /// <summary>
@@ -139,6 +141,17 @@ public class ProductImageService : IProductImageService
         if (image == null)
             throw new KeyNotFoundException($"Image with ID {id} not found");
 
+        // Delete the physical file
+        try
+        {
+            await _fileUploadService.DeleteImageAsync(image.ImageUrl);
+        }
+        catch (Exception ex)
+        {
+            // Log but don't fail if file deletion fails
+            System.Diagnostics.Debug.WriteLine($"Warning: Failed to delete file {image.ImageUrl}: {ex.Message}");
+        }
+
         await _imageRepository.DeleteAsync(image);
     }
 
@@ -150,6 +163,21 @@ public class ProductImageService : IProductImageService
         var product = await _productRepository.GetByIdAsync(productId);
         if (product == null)
             throw new KeyNotFoundException($"Product with ID {productId} not found");
+
+        // Get all images first to delete their files
+        var images = await _imageRepository.GetImagesByProductIdAsync(productId);
+        foreach (var image in images)
+        {
+            try
+            {
+                await _fileUploadService.DeleteImageAsync(image.ImageUrl);
+            }
+            catch (Exception ex)
+            {
+                // Log but continue with other files
+                System.Diagnostics.Debug.WriteLine($"Warning: Failed to delete file {image.ImageUrl}: {ex.Message}");
+            }
+        }
 
         await _imageRepository.DeleteProductImagesAsync(productId);
     }

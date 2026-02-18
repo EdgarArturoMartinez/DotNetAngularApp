@@ -1,4 +1,6 @@
+using DotNetCoreWebApi.Application.Entities;
 using DotNetCoreWebApi.Application.Interfaces;
+using DotNetCoreWebApi.Application.Services;
 using DotNetCoreWebApi.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,10 +14,14 @@ namespace DotNetCoreWebApi.Controllers;
 public class ProductImagesController : ControllerBase
 {
     private readonly IProductImageService _imageService;
+    private readonly IFileUploadService _fileUploadService;
+    private readonly ILogger<ProductImagesController> _logger;
 
-    public ProductImagesController(IProductImageService imageService)
+    public ProductImagesController(IProductImageService imageService, IFileUploadService fileUploadService, ILogger<ProductImagesController> logger)
     {
         _imageService = imageService;
+        _fileUploadService = fileUploadService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -232,6 +238,51 @@ public class ProductImagesController : ControllerBase
         catch (KeyNotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Upload a product image file
+    /// </summary>
+    [HttpPost("upload")]
+    public async Task<ActionResult<ProductImageDto>> UploadImage(int productId, IFormFile file, [FromForm] int imageType, [FromForm] int displayOrder = 0)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest(new { message = "No file provided" });
+
+        try
+        {
+            // Save the file
+            string relativeImagePath = await _fileUploadService.SaveProductImageAsync(file, productId, imageType);
+
+            // Create ProductImageCreateUpdateDto
+            var imageDto = new ProductImageCreateUpdateDto
+            {
+                ImageUrl = relativeImagePath,
+                ImageType = (ProductImageTypeDto)imageType,
+                DisplayOrder = displayOrder,
+                Width = null,
+                Height = null
+            };
+
+            // Create the database record
+            var createdImage = await _imageService.CreateImageAsync(productId, imageDto);
+
+            _logger.LogInformation($"Image uploaded for product {productId}: {relativeImagePath}");
+            return CreatedAtAction(nameof(GetImageById), new { productId, imageId = createdImage.Id }, createdImage);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogError(ex, $"Error uploading image for product {productId}");
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Error saving image file" });
         }
     }
 }
