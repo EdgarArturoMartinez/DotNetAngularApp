@@ -5,8 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { VegCategoryService } from '../vegcategory.service';
-import { VegCategory } from '../vegcategory';
+import { CategoryService } from '../features/categories/services/category.service';
+import { VegCategory } from '../shared/models/entities';
 import { DialogService } from '../shared/services/dialog.service';
 import { NotificationService } from '../shared/services/notification.service';
 
@@ -19,7 +19,7 @@ import { NotificationService } from '../shared/services/notification.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IndexVegcategories implements OnInit {
-  vegCategoryService = inject(VegCategoryService);
+  categoryService = inject(CategoryService);
   cdr = inject(ChangeDetectorRef);
   router = inject(Router);
   dialogService = inject(DialogService);
@@ -38,21 +38,14 @@ export class IndexVegcategories implements OnInit {
     this.categories = [];
     
     console.log('Loading categories from API...');
-    this.vegCategoryService.getVegcategories().subscribe({
-      next: (data: VegCategory[]) => {
+    this.categoryService.getAll().subscribe({
+      next: (data) => {
         console.log('Categories loaded successfully:', data);
-        // Ensure each category has a valid idCategory property
-        this.categories = Array.isArray(data) ? data.map(category => {
-          // Handle both 'idCategory' and 'Id' or 'id' property names from API
-          if (!category.idCategory && ((category as any).Id || (category as any).id)) {
-            category.idCategory = (category as any).Id || (category as any).id;
-          }
-          return category;
-        }) : [];
+        this.categories = data;
         this.isLoading = false;
         this.cdr.markForCheck();
       },
-      error: (error: any) => {
+      error: (error) => {
         console.error('Error loading categories:', error);
         if (error.status === 0) {
           this.error = 'Cannot connect to backend. Check CORS settings on the .NET API.';
@@ -66,21 +59,18 @@ export class IndexVegcategories implements OnInit {
   }
 
   editCategory(category: VegCategory) {
-    // Handle both 'idCategory' and potential API response variations
-    const categoryId = category.idCategory || (category as any).id || (category as any).Id;
-    
-    if (!categoryId) {
+    if (!category.idCategory) {
       this.notificationService.error('Category ID not found. Please refresh and try again.');
       return;
     }
     
-    this.router.navigate(['/categories/edit', categoryId]);
+    this.router.navigate(['/categories/edit', category.idCategory]);
   }
 
   deleteCategory(category: VegCategory) {
     this.dialogService.confirmDelete('Category', category.categoryName).subscribe(confirmed => {
       if (confirmed) {
-        this.vegCategoryService.deleteVegcategory(category.idCategory).subscribe({
+        this.categoryService.delete(category.idCategory!).subscribe({
           next: () => {
             this.notificationService.deleted('Category', category.categoryName);
             this.loadCategories();

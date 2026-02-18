@@ -1,4 +1,7 @@
 using DotNetCoreWebApi.Application.DBContext;
+using DotNetCoreWebApi.Application.Interfaces;
+using DotNetCoreWebApi.Application.Services;
+using DotNetCoreWebApi.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -47,6 +50,14 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register Repositories
+builder.Services.AddScoped<IVegCategoryRepository, VegCategoryRepository>();
+builder.Services.AddScoped<IVegProductRepository, VegProductRepository>();
+
+// Register Services
+builder.Services.AddScoped<IVegCategoryService, VegCategoryService>();
+builder.Services.AddScoped<IVegProductService, VegProductService>();
 
 var app = builder.Build();
 

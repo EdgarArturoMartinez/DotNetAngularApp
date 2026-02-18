@@ -64,8 +64,8 @@
           <div class="stock-section">
             <span class="stock-label">Stock</span>
             <div class="stock-display">
-              <span class="stock-value">{{ product.stockQuantity }} units</span>
-              <span class="low-stock-warning" *ngIf="product.stockQuantity <= 10">⚠️ Low</span>
+              <span class="stock-value">{{ product.stockQuantity || 0 }} units</span>
+              <span class="low-stock-warning" *ngIf="(product.stockQuantity || 0) <= 10">⚠️ Low</span>
             </div>
           </div>
         </div>

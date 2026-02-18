@@ -6,8 +6,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { VegCategoryService } from '../vegcategory.service';
-import { VegCategory } from '../vegcategory';
+import { CategoryService } from '../features/categories/services/category.service';
+import { VegCategoryCreateUpdateDto } from '../shared/models/entities';
 import { NotificationService } from '../shared/services/notification.service';
 
 @Component({
@@ -19,7 +19,7 @@ import { NotificationService } from '../shared/services/notification.service';
 })
 export class CreateVegcategory {
   private readonly formBuilder = inject(FormBuilder);
-  private vegCategoryService = inject(VegCategoryService);
+  private categoryService = inject(CategoryService);
   private router = inject(Router);
   private notificationService = inject(NotificationService);
 
@@ -31,12 +31,12 @@ export class CreateVegcategory {
   saveChanges() {
     if (this.vegCategoryForm.valid) {
       const formValue = this.vegCategoryForm.value;
-      const categoryData: any = {
-        categoryName: formValue.categoryName,
-        description: formValue.description || ''
+      const categoryData: VegCategoryCreateUpdateDto = {
+        categoryName: formValue.categoryName!,
+        description: formValue.description || undefined
       };
       
-      this.vegCategoryService.createVegcategory(categoryData).subscribe({
+      this.categoryService.create(categoryData).subscribe({
         next: (response) => {
           const categoryName = formValue.categoryName ?? undefined;
           this.notificationService.created('Category', categoryName);

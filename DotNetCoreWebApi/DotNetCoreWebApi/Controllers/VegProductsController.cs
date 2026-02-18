@@ -1,153 +1,110 @@
-﻿using DotNetCoreWebApi.Application.DBContext;
-using DotNetCoreWebApi.Application.Entities;
+﻿using DotNetCoreWebApi.Application.Interfaces;
 using DotNetCoreWebApi.DTOs;
-using DotNetCoreWebApi.Migrations;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
-namespace DotNetCoreWebApi.Controllers
+namespace DotNetCoreWebApi.Controllers;
+
+/// <summary>
+/// Controller for VegProduct operations
+/// </summary>
+[ApiController]
+[Route("api/[controller]")]
+public class VegProductsController : ControllerBase
 {
-    [Route("api/vegproducts")]
-    public class VegProductsController : ControllerBase
+    private readonly IVegProductService _productService;
+
+    public VegProductsController(IVegProductService productService)
     {
-        private readonly ApplicationDBContext context;
-        public VegProductsController(ApplicationDBContext context)
+        _productService = productService;
+    }
+
+    /// <summary>
+    /// Get all products with their categories
+    /// </summary>
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<VegProductDto>>> GetAllProducts()
+    {
+        var products = await _productService.GetAllProductsAsync();
+        return Ok(products);
+    }
+
+    /// <summary>
+    /// Get a specific product by ID
+    /// </summary>
+    [HttpGet("{id}")]
+    public async Task<ActionResult<VegProductDto>> GetProductById(int id)
+    {
+        var product = await _productService.GetProductByIdAsync(id);
+
+        if (product == null)
+            return NotFound(new { message = $"Product with ID {id} not found" });
+
+        return Ok(product);
+    }
+
+    /// <summary>
+    /// Create a new product
+    /// </summary>
+    [HttpPost]
+    public async Task<ActionResult<VegProductDto>> CreateProduct([FromBody] VegProductCreateUpdateDto productDto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        if (string.IsNullOrWhiteSpace(productDto.Name))
+            return BadRequest(new { message = "Product name is required" });
+
+        var created = await _productService.CreateProductAsync(productDto);
+        return Ok(created);
+    }
+
+    /// <summary>
+    /// Update an existing product
+    /// </summary>
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateProduct(int id, [FromBody] VegProductCreateUpdateDto productDto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        if (string.IsNullOrWhiteSpace(productDto.Name))
+            return BadRequest(new { message = "Product name is required" });
+
+        try
         {
-            this.context = context;
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<VegProductDto>>> GetAllAsync()
-        {
-            var products = await context.VegProducts
-                .Include(p => p.VegCategory)
-                .AsNoTracking()
-                .ToListAsync();
-
-            var productDtos = products.Select(p => new VegProductDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Price = p.Price,
-                Description = p.Description,
-                StockQuantity = p.StockQuantity,
-                IdCategory = p.IdCategory,
-                VegCategory = p.VegCategory == null ? null : new VegCategoryBasicDto
-                {
-                    IdCategory = p.VegCategory.IdCategory,
-                    CategoryName = p.VegCategory.CategoryName,
-                    Description = p.VegCategory.Description
-                }
-            }).ToList();
-
-            return Ok(productDtos);
-        }
-
-
-
-        //[HttpGet]
-        //public async Task<List<VegProducts>> GetAsync()
-        //{
-        //    var vegProducts = await context.VegProducts.ToListAsync();
-        //    return vegProducts.Select(p => new VegProducts
-        //    {
-        //        Id = p.Id,
-        //        Name = p.Name,
-        //        Price = p.Price
-        //    }).ToList();
-        //}
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<VegProductDto>> GetByIdAsync(int id)
-        {
-            var vegProduct = await context.VegProducts
-                .Include(p => p.VegCategory)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(p => p.Id == id);
-            
-            if (vegProduct == null)
-                return NotFound();
-
-            var dto = new VegProductDto
-            {
-                Id = vegProduct.Id,
-                Name = vegProduct.Name,
-                Price = vegProduct.Price,
-                Description = vegProduct.Description,
-                StockQuantity = vegProduct.StockQuantity,
-                IdCategory = vegProduct.IdCategory,
-                VegCategory = vegProduct.VegCategory == null ? null : new VegCategoryBasicDto
-                {
-                    IdCategory = vegProduct.VegCategory.IdCategory,
-                    CategoryName = vegProduct.VegCategory.CategoryName,
-                    Description = vegProduct.VegCategory.Description
-                }
-            };
-
-            return dto;
-        }
-
-
-
-
-        [HttpPost]
-        public async Task<ActionResult<Application.Entities.VegProducts>> CreateAsync([FromBody] Application.Entities.VegProducts vegProduct)
-        {
-            context.VegProducts.Add(vegProduct);
-            await context.SaveChangesAsync();
-            return Ok(vegProduct);
-        }
-
-
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> UpdateAsync(int id, [FromBody] Application.Entities.VegProducts vegProduct)
-        //{
-        //    var existing = await context.VegProducts.FindAsync(id);
-        //    if (existing == null) return NotFound();
-
-        //    existing.Name = vegProduct.Name;
-        //    existing.Price = vegProduct.Price;
-        //    await context.SaveChangesAsync();
-        //    return Ok(existing);
-        //}
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutVegproduct(int id, [FromBody] Application.Entities.VegProducts vegproduct)
-        {
-            if (id != vegproduct.Id)
-                return BadRequest("ID mismatch");
-
-            if (string.IsNullOrWhiteSpace(vegproduct.Name))
-                return BadRequest("Product name is required");
-
-            var existingProduct = await context.VegProducts.FindAsync(id);
-            if (existingProduct == null)
-                return NotFound();
-
-            // Update only the fields that should be updated
-            existingProduct.Name = vegproduct.Name;
-            existingProduct.Price = vegproduct.Price;
-            existingProduct.Description = vegproduct.Description;
-            existingProduct.StockQuantity = vegproduct.StockQuantity;
-            existingProduct.IdCategory = vegproduct.IdCategory == 0 ? null : vegproduct.IdCategory;
-
-            await context.SaveChangesAsync();
+            await _productService.UpdateProductAsync(id, productDto);
             return NoContent();
         }
-
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(int id)
+        catch (KeyNotFoundException ex)
         {
-            var vegProduct = await context.VegProducts.FindAsync(id);
-            if (vegProduct == null)
-                return NotFound();
-
-            context.VegProducts.Remove(vegProduct);
-            await context.SaveChangesAsync();
-            return Ok();
+            return NotFound(new { message = ex.Message });
         }
+    }
 
+    /// <summary>
+    /// Delete a product
+    /// </summary>
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProduct(int id)
+    {
+        try
+        {
+            await _productService.DeleteProductAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Get products by category ID
+    /// </summary>
+    [HttpGet("category/{categoryId}")]
+    public async Task<ActionResult<IEnumerable<VegProductDto>>> GetProductsByCategory(int categoryId)
+    {
+        var products = await _productService.GetProductsByCategoryAsync(categoryId);
+        return Ok(products);
     }
 }

@@ -1,90 +1,94 @@
-﻿using DotNetCoreWebApi.Application.DBContext;
-using DotNetCoreWebApi.Application.Entities;
+﻿using DotNetCoreWebApi.Application.Interfaces;
 using DotNetCoreWebApi.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DotNetCoreWebApi.Controllers;
 
+/// <summary>
+/// Controller for VegCategory operations
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class VegCategoriesController : ControllerBase
 {
-    private readonly ApplicationDBContext context;
+    private readonly IVegCategoryService _categoryService;
 
-    public VegCategoriesController(ApplicationDBContext context)
+    public VegCategoriesController(IVegCategoryService categoryService)
     {
-        this.context = context;
+        _categoryService = categoryService;
     }
 
+    /// <summary>
+    /// Get all categories with product count
+    /// </summary>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<VegCategoryDto>>> GetCategories()
     {
-        var categories = await context.VegCategories
-            .Include(c => c.VegProducts)
-            .AsNoTracking()
-            .ToListAsync();
-
-        var categoryDtos = categories.Select(c => new VegCategoryDto
-        {
-            IdCategory = c.IdCategory,
-            CategoryName = c.CategoryName,
-            Description = c.Description,
-            CreatedAt = c.CreatedAt,
-            ProductCount = c.VegProducts?.Count ?? 0
-        }).ToList();
-
-        return Ok(categoryDtos);
+        var categories = await _categoryService.GetAllCategoriesAsync();
+        return Ok(categories);
     }
 
+    /// <summary>
+    /// Get a specific category by ID
+    /// </summary>
     [HttpGet("{id}")]
-    public async Task<ActionResult<VegCategory>> GetCategoryById(int id)
+    public async Task<ActionResult<VegCategoryDto>> GetCategoryById(int id)
     {
-        var category = await context.VegCategories
-            .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.IdCategory == id);
+        var category = await _categoryService.GetCategoryByIdAsync(id);
 
         if (category == null)
-            return NotFound();
+            return NotFound(new { message = $"Category with ID {id} not found" });
 
-        // Return the entity directly for edit operations (without navigation properties)
-        return Ok(new 
-        {
-            idCategory = category.IdCategory,
-            categoryName = category.CategoryName,
-            description = category.Description,
-            createdAt = category.CreatedAt
-        });
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<VegCategory>> CreateCategory(VegCategory category)
-    {
-        context.VegCategories.Add(category);
-        await context.SaveChangesAsync();
         return Ok(category);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCategory(int id, VegCategory category)
+    /// <summary>
+    /// Create a new category
+    /// </summary>
+    [HttpPost]
+    public async Task<ActionResult<VegCategoryDto>> CreateCategory([FromBody] VegCategoryCreateUpdateDto categoryDto)
     {
-        if (id != category.IdCategory)
-            return BadRequest();
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-        context.Entry(category).State = EntityState.Modified;
-        await context.SaveChangesAsync();
-        return NoContent();
+        var created = await _categoryService.CreateCategoryAsync(categoryDto);
+        return Ok(created);
     }
 
+    /// <summary>
+    /// Update an existing category
+    /// </summary>
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateCategory(int id, [FromBody] VegCategoryCreateUpdateDto categoryDto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
+        {
+            await _categoryService.UpdateCategoryAsync(id, categoryDto);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Delete a category
+    /// </summary>
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCategory(int id)
     {
-        var category = await context.VegCategories.FindAsync(id);
-        if (category == null)
-            return NotFound();
-
-        context.VegCategories.Remove(category);
-        await context.SaveChangesAsync();
-        return NoContent();
+        try
+        {
+            await _categoryService.DeleteCategoryAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
     }
 }

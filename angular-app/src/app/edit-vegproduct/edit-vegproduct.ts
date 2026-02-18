@@ -8,10 +8,10 @@ import { MatHint } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Vegproduct } from '../vegproduct';
+import { ProductService } from '../features/products/services/product.service';
+import { CategoryService } from '../features/categories/services/category.service';
 import { CommonModule } from '@angular/common';
-import { VegCategoryService } from '../vegcategory.service';
-import { VegCategory } from '../vegcategory';
+import { VegCategory, VegProduct, VegProductCreateUpdateDto } from '../shared/models/entities';
 import { NotificationService } from '../shared/services/notification.service';
 
 @Component({
@@ -22,8 +22,8 @@ import { NotificationService } from '../shared/services/notification.service';
 })
 export class EditVegproduct implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
-  vegProduct = inject(Vegproduct);
-  vegCategoryService = inject(VegCategoryService);
+  productService = inject(ProductService);
+  categoryService = inject(CategoryService);
   router = inject(Router);
   notificationService = inject(NotificationService);
   activatedRoute = inject(ActivatedRoute);
@@ -69,15 +69,9 @@ export class EditVegproduct implements OnInit {
   }
 
   loadCategories() {
-    this.vegCategoryService.getVegcategories().subscribe({
+    this.categoryService.getAll().subscribe({
       next: (data) => {
-        // Normalize category IDs in case API returns different property names
-        this.categories = data.map(cat => {
-          if (!cat.idCategory && ((cat as any).Id || (cat as any).id)) {
-            cat.idCategory = (cat as any).Id || (cat as any).id;
-          }
-          return cat;
-        });
+        this.categories = data;
         console.log('Categories loaded for dropdown:', this.categories);
       },
       error: (error) => {
@@ -95,7 +89,7 @@ export class EditVegproduct implements OnInit {
 
     this.isLoading = true;
     
-    this.vegProduct.getVegproductById(this.productId).subscribe({
+    this.productService.getById(this.productId).subscribe({
       next: (product) => {
         console.log('SUCCESS! Product loaded:', product);
         console.log('Product stockQuantity from API:', product.stockQuantity);
@@ -164,18 +158,17 @@ export class EditVegproduct implements OnInit {
         return;
       }
       
-      const vegProductData: any = {
-        id: this.productId,
+      const productData: VegProductCreateUpdateDto = {
         name: String(formValue.name).trim(),
         price: parseFloat(String(formValue.price)),
-        description: formValue.description || '',
+        description: formValue.description || undefined,
         stockQuantity: formValue.stockQuantity || 0,
         idCategory: formValue.idCategory || null
       };
       
-      console.log('Submitting product data:', vegProductData);
+      console.log('Submitting product data:', productData);
       
-      this.vegProduct.updateVegproduct(this.productId, vegProductData).subscribe({
+      this.productService.update(this.productId, productData).subscribe({
         next: () => {
           const productName = formValue.name ?? undefined;
           this.notificationService.updated('Product', productName);

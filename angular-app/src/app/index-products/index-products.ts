@@ -5,7 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Vegproduct } from '../vegproduct';
+import { ProductService } from '../features/products/services/product.service';
+import { VegProduct } from '../shared/models/entities';
 import { DialogService } from '../shared/services/dialog.service';
 import { NotificationService } from '../shared/services/notification.service';
 
@@ -17,12 +18,12 @@ import { NotificationService } from '../shared/services/notification.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IndexProducts implements OnInit {
-  vegproductService = inject(Vegproduct);
+  productService = inject(ProductService);
   cdr = inject(ChangeDetectorRef);
   router = inject(Router);
   dialogService = inject(DialogService);
   notificationService = inject(NotificationService);
-  products: any[] = [];
+  products: VegProduct[] = [];
   isLoading = false;
   error = '';
 
@@ -35,22 +36,13 @@ export class IndexProducts implements OnInit {
     this.error = '';
     this.products = [];
     
-    this.vegproductService.getVegproducts().subscribe({
-      next: (data: any) => {
-        // Ensure each product has a valid ID property
-        this.products = Array.isArray(data) ? data.map(product => {
-          // Handle both 'id' and 'Id' or 'idVegproduct' property names from API
-          if (!product.id && (product.Id || product.idVegproduct)) {
-            product.id = product.Id || product.idVegproduct;
-          }
-          return product;
-        }) : [];
-        console.log('Products loaded:', this.products);
-        console.log('First product stockQuantity:', this.products[0]?.stockQuantity);
+    this.productService.getAll().subscribe({
+      next: (data) => {
+        this.products = data;
         this.isLoading = false;
         this.cdr.markForCheck();
       },
-      error: (error: any) => {
+      error: (error) => {
         this.error = 'Failed to load products: ' + (error.message || error.statusText || 'Unknown');
         this.isLoading = false;
         this.cdr.markForCheck();
@@ -58,23 +50,19 @@ export class IndexProducts implements OnInit {
     });
   }
 
-  editProduct(product: any) {
-    // Navigate to edit page with product ID
-    // Handle both 'id' and potential API response variations
-    const productId = product.id || product.idVegproduct || product.Id;
-    
-    if (!productId) {
+  editProduct(product: VegProduct) {
+    if (!product.id) {
       this.notificationService.error('Product ID not found. Please refresh and try again.');
       return;
     }
     
-    this.router.navigate(['/products/edit', productId]);
+    this.router.navigate(['/products/edit', product.id]);
   }
 
-  deleteProduct(product: any) {
+  deleteProduct(product: VegProduct) {
     this.dialogService.confirmDelete('Product', product.name).subscribe(confirmed => {
       if (confirmed) {
-        this.vegproductService.deleteVegproduct(product.id).subscribe({
+        this.productService.delete(product.id!).subscribe({
           next: () => {
             this.notificationService.deleted('Product', product.name);
             this.loadProducts();

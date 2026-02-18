@@ -24,10 +24,20 @@ export interface VegProduct extends IEntity {
   name: string;
   price: number;
   description?: string;
+  stockQuantity?: number;
   idCategory?: number;
-  vegCategory?: VegCategory;
+  vegCategory?: VegCategoryBasic;
   createdAt?: string;
   updatedAt?: string;
+}
+
+/**
+ * Basic VegCategory for nested references
+ */
+export interface VegCategoryBasic {
+  idCategory: number;
+  categoryName: string;
+  description?: string;
 }
 
 /**
@@ -38,6 +48,7 @@ export interface VegProductCreateUpdateDto {
   name: string;
   price: number;
   description?: string;
+  stockQuantity?: number;
   idCategory?: number | null;
 }
 

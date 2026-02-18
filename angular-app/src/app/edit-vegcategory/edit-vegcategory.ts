@@ -6,8 +6,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { VegCategoryService } from '../vegcategory.service';
-import { VegCategory } from '../vegcategory';
+import { CategoryService } from '../features/categories/services/category.service';
+import { VegCategory, VegCategoryCreateUpdateDto } from '../shared/models/entities';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NotificationService } from '../shared/services/notification.service';
 
@@ -20,7 +20,7 @@ import { NotificationService } from '../shared/services/notification.service';
 })
 export class EditVegcategory implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
-  private vegCategoryService = inject(VegCategoryService);
+  private categoryService = inject(CategoryService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private notificationService = inject(NotificationService);
@@ -60,7 +60,7 @@ export class EditVegcategory implements OnInit {
     this.isLoading = true;
     console.log('Calling API:', `https://localhost:7020/api/vegcategories/${this.categoryId}`);
     
-    this.vegCategoryService.getVegcategoryById(this.categoryId).subscribe({
+    this.categoryService.getById(this.categoryId).subscribe({
       next: (category) => {
         try {
           console.log('SUCCESS! Category loaded:', category);
@@ -118,13 +118,12 @@ export class EditVegcategory implements OnInit {
   saveChanges() {
     if (this.vegCategoryForm.valid && this.categoryId) {
       const formValue = this.vegCategoryForm.value;
-      const categoryData: any = {
-        idCategory: this.categoryId,
-        categoryName: formValue.categoryName,
-        description: formValue.description || ''
+      const categoryData: VegCategoryCreateUpdateDto = {
+        categoryName: formValue.categoryName!,
+        description: formValue.description || undefined
       };
       
-      this.vegCategoryService.updateVegcategory(this.categoryId, categoryData).subscribe({
+      this.categoryService.update(this.categoryId, categoryData).subscribe({
         next: () => {
           const categoryName = formValue.categoryName ?? undefined;
           this.notificationService.updated('Category', categoryName);

@@ -7,10 +7,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatHint } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
-import { Vegproduct } from '../vegproduct';
+import { ProductService } from '../features/products/services/product.service';
+import { CategoryService } from '../features/categories/services/category.service';
 import { CommonModule } from '@angular/common';
-import { VegCategoryService } from '../vegcategory.service';
-import { VegCategory } from '../vegcategory';
+import { VegCategory, VegProductCreateUpdateDto } from '../shared/models/entities';
 import { NotificationService } from '../shared/services/notification.service';
 
 @Component({
@@ -21,8 +21,8 @@ import { NotificationService } from '../shared/services/notification.service';
 })
 export class CreateVegproduct implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
-  vegProduct = inject(Vegproduct);
-  vegCategoryService = inject(VegCategoryService);
+  productService = inject(ProductService);
+  categoryService = inject(CategoryService);
   router = inject(Router);
   notificationService = inject(NotificationService);
 
@@ -41,15 +41,9 @@ export class CreateVegproduct implements OnInit {
   }
 
   loadCategories() {
-    this.vegCategoryService.getVegcategories().subscribe({
+    this.categoryService.getAll().subscribe({
       next: (data) => {
-        // Normalize category IDs in case API returns different property names
-        this.categories = data.map(cat => {
-          if (!cat.idCategory && ((cat as any).Id || (cat as any).id)) {
-            cat.idCategory = (cat as any).Id || (cat as any).id;
-          }
-          return cat;
-        });
+        this.categories = data;
         console.log('Categories loaded for dropdown:', this.categories);
       },
       error: (error) => {
@@ -71,15 +65,15 @@ export class CreateVegproduct implements OnInit {
   saveChanges() {
     if (this.vegProductForm.valid) {
       const formValue = this.vegProductForm.value;
-      const vegProductData: any = {
-        name: formValue.name,
+      const productData: VegProductCreateUpdateDto = {
+        name: formValue.name!,
         price: parseFloat(formValue.price || '0'),
-        description: formValue.description || '',
+        description: formValue.description || undefined,
         stockQuantity: formValue.stockQuantity || 0,
         idCategory: formValue.idCategory || null
       };
       
-      this.vegProduct.createVegproduct(vegProductData).subscribe({
+      this.productService.create(productData).subscribe({
         next: (response) => {
           const productName = formValue.name ?? undefined;
           this.notificationService.created('Product', productName);
