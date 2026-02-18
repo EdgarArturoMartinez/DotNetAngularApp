@@ -86,7 +86,7 @@ export class CreateVegproduct implements OnInit {
           
           // Store the created product ID for image upload
           if (response && response.id) {
-            this.createdProductId.set(response.id);
+            this.tempProductId.set(response.id);
           }
         },
         error: (error) => {

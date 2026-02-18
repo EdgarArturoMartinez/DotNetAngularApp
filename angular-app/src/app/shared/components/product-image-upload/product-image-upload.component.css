@@ -201,6 +201,85 @@
 }
 
 /* ============================================
+   FILE INPUT STYLES
+   ============================================ */
+
+.file-input {
+  display: none;
+}
+
+.file-input-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.file-select-btn {
+  flex-shrink: 0;
+  min-width: 150px;
+  height: 44px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.file-select-btn:hover:not(:disabled) {
+  transform: scale(1.02);
+}
+
+.filename {
+  flex: 1;
+  min-width: 150px;
+  font-size: 13px;
+  color: #555;
+  font-style: italic;
+  padding: 10px 12px;
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: break-all;
+}
+
+.gallery-actions {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+}
+
+.upload-btn,
+.delete-btn {
+  transition: all 0.2s ease;
+}
+
+.upload-btn:hover {
+  transform: scale(1.1);
+}
+
+.delete-btn:hover {
+  transform: scale(1.1);
+}
+
+.add-gallery-btn {
+  flex-shrink: 0;
+  min-width: 180px;
+  height: 44px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.gallery-counter {
+  font-size: 13px;
+  color: #7f8c8d;
+  font-weight: 500;
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+/* ============================================
    FORM FIELDS
    ============================================ */
 
@@ -457,13 +536,32 @@ button:disabled {
     width: 250px;
   }
 
+  .file-input-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .file-select-btn {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .filename {
+    width: 100%;
+  }
+
   .add-gallery-section {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .add-gallery-section .image-url-field {
+  .add-gallery-btn {
     width: 100%;
+    min-width: unset;
+  }
+
+  .gallery-counter {
+    padding: 0;
   }
 
   .add-btn {
@@ -543,6 +641,24 @@ button:disabled {
     width: 200px;
   }
 
+  .file-input-group {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .file-select-btn {
+    width: 100%;
+    min-width: unset;
+    height: 40px;
+    font-size: 13px;
+  }
+
+  .filename {
+    width: 100%;
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+
   .error-message {
     font-size: 12px;
     padding: 8px 10px;
@@ -557,6 +673,18 @@ button:disabled {
   .add-btn {
     height: 36px;
     font-size: 13px;
+  }
+
+  .add-gallery-btn {
+    width: 100%;
+    min-width: unset;
+    height: 40px;
+    font-size: 13px;
+  }
+
+  .gallery-counter {
+    display: block;
+    margin-top: 4px;
   }
 
   .gallery-grid {

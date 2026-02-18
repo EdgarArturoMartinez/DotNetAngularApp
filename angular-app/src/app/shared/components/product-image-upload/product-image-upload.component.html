@@ -13,7 +13,7 @@
       </div>
 
       <div class="section-info">
-        <p class="info-label">Recommended: <strong>1000x800px</strong> (5:4 ratio, ~200KB max)</p>
+        <p class="info-label">Recommended: <strong>1000x800px</strong> (5:4 ratio, ~5MB max)</p>
         <p class="info-description">This is your featured product image displayed on product detail pages, category listings, and the home page hero section.</p>
       </div>
 
@@ -22,15 +22,31 @@
         <span class="image-badge">MAIN</span>
       </div>
 
-      <mat-form-field appearance="outline" class="image-url-field">
-        <mat-label>Image URL</mat-label>
-        <input matInput 
-          [value]="mainImageUrl()"
-          (change)="onMainImageUrlChange($event.target.value)"
-          placeholder="e.g., /images/products/carrot-main.jpg or https://...">
-        <mat-icon matPrefix>image</mat-icon>
-        <mat-hint>Or paste image URL here. Can be relative path or full URL.</mat-hint>
-      </mat-form-field>
+      <!-- Hidden file input -->
+      <input 
+        #mainImageInput
+        type="file" 
+        accept="image/*"
+        (change)="onMainImageSelected($event)"
+        [disabled]="uploadingImageType() !== null"
+        class="file-input">
+
+      <!-- File selection UI -->
+      <div class="file-input-group">
+        <button 
+          type="button"
+          mat-raised-button 
+          color="primary"
+          (click)="mainImageInput.click()"
+          [disabled]="uploadingImageType() !== null"
+          class="file-select-btn">
+          <mat-icon>upload_file</mat-icon>
+          Choose Image
+        </button>
+        <span class="filename" *ngIf="mainImageFileName()">
+          📄 {{ mainImageFileName() }}
+        </span>
+      </div>
 
       <div class="error-message" *ngIf="mainImageError()">
         <mat-icon>error</mat-icon>
@@ -40,7 +56,7 @@
       <div class="button-group">
         <button mat-raised-button color="primary" 
           (click)="saveMainImage()"
-          [disabled]="!mainImageUrl() || uploadingImageType() !== null"
+          [disabled]="!mainImageFile() || uploadingImageType() !== null"
           class="save-btn">
           <mat-icon>{{ mainImagePreview() ? 'refresh' : 'add' }}</mat-icon>
           {{mainImagePreview() ? 'Update Main Image' : 'Add Main Image' }}
@@ -63,7 +79,7 @@
       </div>
 
       <div class="section-info">
-        <p class="info-label">Recommended: <strong>600x600px</strong> (1:1 square, ~150KB max)</p>
+        <p class="info-label">Recommended: <strong>600x600px</strong> (1:1 square, ~4MB max)</p>
         <p class="info-description">Perfect square format for mobile shopping carts, product grids, and thumbnail displays. Automatically adapts to all screen sizes.</p>
         <p class="info-note">💡 Tip: Square format prevents awkward cropping on mobile devices.</p>
       </div>
@@ -73,15 +89,31 @@
         <span class="image-badge mobile">MOBILE</span>
       </div>
 
-      <mat-form-field appearance="outline" class="image-url-field">
-        <mat-label>Mobile Image URL</mat-label>
-        <input matInput 
-          [value]="mobileImageUrl()"
-          (change)="onMobileImageUrlChange($event.target.value)"
-          placeholder="e.g., /images/products/carrot-mobile.jpg">
-        <mat-icon matPrefix>image</mat-icon>
-        <mat-hint>Square images work best for mobile layouts.</mat-hint>
-      </mat-form-field>
+      <!-- Hidden file input -->
+      <input 
+        #mobileImageInput
+        type="file" 
+        accept="image/*"
+        (change)="onMobileImageSelected($event)"
+        [disabled]="uploadingImageType() !== null"
+        class="file-input">
+
+      <!-- File selection UI -->
+      <div class="file-input-group">
+        <button 
+          type="button"
+          mat-raised-button 
+          color="primary"
+          (click)="mobileImageInput.click()"
+          [disabled]="uploadingImageType() !== null"
+          class="file-select-btn">
+          <mat-icon>upload_file</mat-icon>
+          Choose Image
+        </button>
+        <span class="filename" *ngIf="mobileImageFileName()">
+          📄 {{ mobileImageFileName() }}
+        </span>
+      </div>
 
       <div class="error-message" *ngIf="mobileImageError()">
         <mat-icon>error</mat-icon>
@@ -91,7 +123,7 @@
       <div class="button-group">
         <button mat-raised-button color="primary"
           (click)="saveMobileImage()"
-          [disabled]="!mobileImageUrl() || uploadingImageType() !== null"
+          [disabled]="!mobileImageFile() || uploadingImageType() !== null"
           class="save-btn">
           <mat-icon>{{ mobileImagePreview() ? 'refresh' : 'add' }}</mat-icon>
           {{ mobileImagePreview() ? 'Update Mobile Image' : 'Add Mobile Image' }}
@@ -117,7 +149,7 @@
       </div>
 
       <div class="section-info">
-        <p class="info-label">Recommended: <strong>900x675px</strong> (4:3 ratio, ~180KB max)</p>
+        <p class="info-label">Recommended: <strong>900x675px</strong> (4:3 ratio, ~4MB max)</p>
         <p class="info-description">Add up to 8 additional product images showing different angles, details, or lifestyle shots. These appear in the product carousel and detail gallery.</p>
       </div>
 
@@ -126,9 +158,21 @@
         <div class="gallery-item" *ngFor="let image of galleryImages(); let i = index">
           <img [src]="image.preview" alt="Gallery image {{ i + 1 }}" class="gallery-thumbnail">
           <div class="gallery-overlay">
-            <button mat-icon-button color="warn" (click)="removeGalleryImage(i)" class="delete-btn">
-              <mat-icon>delete</mat-icon>
-            </button>
+            <div class="gallery-actions">
+              <button 
+                mat-icon-button 
+                color="primary" 
+                (click)="addGalleryImage(i)"
+                [disabled]="uploadingImageType() !== null"
+                matTooltip="Upload this image"
+                class="upload-btn">
+                <mat-icon>cloud_upload</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="removeGalleryImage(i)" class="delete-btn"
+                matTooltip="Remove from queue">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
           </div>
           <span class="image-number">#{{ i + 1 }}</span>
         </div>
@@ -136,23 +180,27 @@
 
       <!-- Add Gallery Image -->
       <div class="add-gallery-section">
-        <mat-form-field appearance="outline" class="image-url-field">
-          <mat-label>Add Gallery Image URL</mat-label>
-          <input matInput 
-            [value]="galleryImageInput()"
-            (change)="galleryImageInput.set($event.target.value)"
-            placeholder="e.g., /images/products/carrot-detail.jpg">
-          <mat-icon matPrefix>add_photo_alternate</mat-icon>
-          <mat-hint>Add another product image (4:3 aspect ratio preferred)</mat-hint>
-        </mat-form-field>
+        <input 
+          #galleryImageInput
+          type="file" 
+          accept="image/*"
+          (change)="onGalleryImageSelected($event)"
+          [disabled]="galleryImages().length >= 8 || uploadingImageType() !== null"
+          class="file-input">
 
-        <button mat-raised-button color="accent"
-          (click)="addGalleryImage()"
-          [disabled]="!galleryImageInput() || galleryImages().length >= 8 || uploadingImageType() !== null"
-          class="add-btn">
-          <mat-icon>add</mat-icon>
-          Add Image ({{ galleryImages().length }}/8)
+        <button 
+          type="button"
+          mat-raised-button 
+          color="accent"
+          (click)="galleryImageInput.click()"
+          [disabled]="galleryImages().length >= 8 || uploadingImageType() !== null"
+          class="add-gallery-btn">
+          <mat-icon>add_photo_alternate</mat-icon>
+          Select Gallery Image
         </button>
+        <span class="gallery-counter">
+          ({{ galleryImages().length }}/8)
+        </span>
       </div>
 
       <div class="empty-gallery" *ngIf="galleryImages().length === 0">
@@ -168,7 +216,3 @@
     <ul>
       <li *ngIf="mainImagePreview()">✓ Main image configured</li>
       <li *ngIf="mobileImagePreview()">✓ Mobile image configured</li>
-      <li *ngIf="galleryImages().length > 0">✓ {{ galleryImages().length }} gallery image(s) added</li>
-    </ul>
-  </div>
-</div>

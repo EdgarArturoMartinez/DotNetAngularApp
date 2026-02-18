@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -41,19 +41,25 @@ export class ProductImageUploadComponent {
   isLoading = signal(false);
   uploadingImageType = signal<ProductImageType | null>(null);
 
-  // Main Image
-  mainImageUrl = signal('');
+  // Main Image - File based
+  mainImageFile = signal<File | null>(null);
+  mainImageFileName = signal('');
   mainImageError = signal('');
   mainImagePreview = signal('');
 
-  // Mobile Image
-  mobileImageUrl = signal('');
+  // Mobile Image - File based
+  mobileImageFile = signal<File | null>(null);
+  mobileImageFileName = signal('');
   mobileImageError = signal('');
   mobileImagePreview = signal('');
 
-  // Gallery Images
-  galleryImages = signal<{ url: string; preview: string; error: string }[]>([]);
-  galleryImageInput = signal('');
+  // Gallery Images - File based
+  galleryImages = signal<{ file?: File; url: string; preview: string; error: string }[]>([]);
+
+  // Template references to file inputs
+  @ViewChild('mainImageInput') mainImageInput: any;
+  @ViewChild('mobileImageInput') mobileImageInput: any;
+  @ViewChild('galleryImageInput') galleryImageInput: any;
 
   ProductImageType = ProductImageType;
 
@@ -91,12 +97,10 @@ export class ProductImageUploadComponent {
     const galleryImages = images.filter(img => img.imageType === ProductImageType.Gallery);
 
     if (mainImage) {
-      this.mainImageUrl.set(mainImage.imageUrl);
       this.mainImagePreview.set(mainImage.imageUrl);
     }
 
     if (mobileImage) {
-      this.mobileImageUrl.set(mobileImage.imageUrl);
       this.mobileImagePreview.set(mobileImage.imageUrl);
     }
 
@@ -112,68 +116,160 @@ export class ProductImageUploadComponent {
   }
 
   /**
-   * Handle main image URL input
+   * Handle main image file selection
    */
-  onMainImageUrlChange(imageUrl: string) {
-    this.mainImageError.set('');
-    this.mainImageUrl.set(imageUrl);
+  onMainImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
     
-    if (imageUrl) {
-      this.mainImagePreview.set(imageUrl);
-      this.validateMainImage(imageUrl);
-    }
-  }
+    if (!file) return;
 
-  /**
-   * Validate main image dimensions and aspect ratio
-   */
-  private validateMainImage(imageUrl: string) {
-    const imageData: ProductImageCreateUpdate = {
-      imageUrl,
-      imageType: ProductImageType.Main,
-      displayOrder: 0,
-      width: 1000, // Recommended
-      height: 800  // Recommended
-    };
-
-    this.imageService.validateImage(this.productId, imageData).subscribe({
-      next: (result: ImageValidationResult) => {
-        if (!result.valid) {
-          this.mainImageError.set(result.message || 'Image validation failed');
-        }
-      },
-      error: (err: any) => {
-        console.error('Validation error:', err);
-      }
+    this.mainImageError.set('');
+    this.mainImageFileName.set(file.name);
+    this.mainImageFile.set(file);
+    
+    this.createImagePreview(file, (preview) => {
+      this.mainImagePreview.set(preview);
+      this.validateImageFile(file, ProductImageType.Main);
     });
   }
 
   /**
-   * Save main image
+   * Handle mobile image file selection
+   */
+  onMobileImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    
+    if (!file) return;
+
+    this.mobileImageError.set('');
+    this.mobileImageFileName.set(file.name);
+    this.mobileImageFile.set(file);
+    
+    this.createImagePreview(file, (preview) => {
+      this.mobileImagePreview.set(preview);
+      this.validateImageFile(file, ProductImageType.Mobile);
+    });
+  }
+
+  /**
+   * Handle gallery image file selection
+   */
+  onGalleryImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    
+    if (!file) return;
+
+    const currentGallery = this.galleryImages();
+    if (currentGallery.length >= 8) {
+      this.snackBar.open('Maximum 8 gallery images allowed', 'Close', { 
+        duration: 3000, 
+        panelClass: 'warn-snackbar' 
+      });
+      return;
+    }
+
+    this.createImagePreview(file, (preview) => {
+      this.galleryImages.update(arr => [...arr, {
+        file,
+        url: '',
+        preview,
+        error: ''
+      }]);
+    });
+    
+    // Reset input
+    input.value = '';
+  }
+
+  /**
+   * Create image preview from File using FileReader API
+   */
+  private createImagePreview(file: File, callback: (preview: string) => void): void {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const preview = e.target?.result as string;
+      callback(preview);
+    };
+    reader.onerror = () => {
+      this.snackBar.open('Error reading file', 'Close', { 
+        duration: 3000, 
+        panelClass: 'error-snackbar' 
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  /**
+   * Validate image file type and size
+   */
+  private validateImageFile(file: File, imageType: ProductImageType): void {
+    const allowedExtensions = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const mainImageMaxSize = 5 * 1024 * 1024; // 5MB
+    const otherImageMaxSize = 4 * 1024 * 1024; // 4MB
+    const maxSize = imageType === ProductImageType.Main ? mainImageMaxSize : otherImageMaxSize;
+
+    if (!allowedExtensions.includes(file.type)) {
+      const errorMsg = `Invalid file type. Allowed: ${allowedExtensions.join(', ')}`;
+      if (imageType === ProductImageType.Main) {
+        this.mainImageError.set(errorMsg);
+      } else if (imageType === ProductImageType.Mobile) {
+        this.mobileImageError.set(errorMsg);
+      }
+      return;
+    }
+
+    if (file.size > maxSize) {
+      const maxSizeMB = maxSize / (1024 * 1024);
+      const errorMsg = `File size exceeds ${maxSizeMB}MB limit`;
+      if (imageType === ProductImageType.Main) {
+        this.mainImageError.set(errorMsg);
+      } else if (imageType === ProductImageType.Mobile) {
+        this.mobileImageError.set(errorMsg);
+      }
+      return;
+    }
+  }
+
+  /**
+   * Save main image file
    */
   saveMainImage() {
-    if (!this.mainImageUrl().trim()) {
-      this.mainImageError.set('Please enter an image URL');
+    const file = this.mainImageFile();
+    
+    if (!file) {
+      this.mainImageError.set('Please select an image file');
       return;
     }
 
     this.uploadingImageType.set(ProductImageType.Main);
-    const imageData: ProductImageCreateUpdate = {
-      imageUrl: this.mainImageUrl(),
-      imageType: ProductImageType.Main,
-      displayOrder: 0
-    };
-
-    this.imageService.createImage(this.productId, imageData).subscribe({
+    
+    this.imageService.uploadImageFile(
+      this.productId,
+      file,
+      ProductImageType.Main,
+      0
+    ).subscribe({
       next: (createdImage: ProductImage) => {
-        this.snackBar.open('Main image saved successfully!', 'Close', { duration: 3000, panelClass: 'success-snackbar' });
+        this.snackBar.open('Main image uploaded successfully!', 'Close', { 
+          duration: 3000, 
+          panelClass: 'success-snackbar' 
+        });
+        this.mainImageFile.set(null);
+        this.mainImageFileName.set('');
+        this.mainImageError.set('');
         this.loadProductImages();
         this.uploadingImageType.set(null);
       },
       error: (err: any) => {
-        console.error('Error saving main image:', err);
-        this.mainImageError.set(err.error?.message || 'Error saving image');
-        this.snackBar.open('Error saving main image', 'Close', { duration: 3000, panelClass: 'error-snackbar' });
+        console.error('Error uploading main image:', err);
+        this.mainImageError.set(err.error?.message || 'Error uploading image');
+        this.snackBar.open('Error uploading main image', 'Close', { 
+          duration: 3000, 
+          panelClass: 'error-snackbar' 
+        });
         this.uploadingImageType.set(null);
       }
     });
@@ -189,7 +285,8 @@ export class ProductImageUploadComponent {
     if (mainImage) {
       this.imageService.deleteImage(this.productId, mainImage.id).subscribe({
         next: () => {
-          this.mainImageUrl.set('');
+          this.mainImageFile.set(null);
+          this.mainImageFileName.set('');
           this.mainImagePreview.set('');
           this.mainImageError.set('');
           this.snackBar.open('Main image removed', 'Close', { duration: 3000 });
@@ -204,68 +301,42 @@ export class ProductImageUploadComponent {
   }
 
   /**
-   * Handle mobile image URL input
-   */
-  onMobileImageUrlChange(imageUrl: string) {
-    this.mobileImageError.set('');
-    this.mobileImageUrl.set(imageUrl);
-    
-    if (imageUrl) {
-      this.mobileImagePreview.set(imageUrl);
-      this.validateMobileImage(imageUrl);
-    }
-  }
-
-  /**
-   * Validate mobile image dimensions and aspect ratio
-   */
-  private validateMobileImage(imageUrl: string) {
-    const imageData: ProductImageCreateUpdate = {
-      imageUrl,
-      imageType: ProductImageType.Mobile,
-      displayOrder: 1,
-      width: 600, // Recommended
-      height: 600 // Recommended
-    };
-
-    this.imageService.validateImage(this.productId, imageData).subscribe({
-      next: (result: ImageValidationResult) => {
-        if (!result.valid) {
-          this.mobileImageError.set(result.message || 'Image validation failed');
-        }
-      },
-      error: (err: any) => {
-        console.error('Validation error:', err);
-      }
-    });
-  }
-
-  /**
-   * Save mobile image
+   * Save mobile image file
    */
   saveMobileImage() {
-    if (!this.mobileImageUrl().trim()) {
-      this.mobileImageError.set('Please enter an image URL');
+    const file = this.mobileImageFile();
+    
+    if (!file) {
+      this.mobileImageError.set('Please select an image file');
       return;
     }
 
     this.uploadingImageType.set(ProductImageType.Mobile);
-    const imageData: ProductImageCreateUpdate = {
-      imageUrl: this.mobileImageUrl(),
-      imageType: ProductImageType.Mobile,
-      displayOrder: 1
-    };
-
-    this.imageService.createImage(this.productId, imageData).subscribe({
+    
+    this.imageService.uploadImageFile(
+      this.productId,
+      file,
+      ProductImageType.Mobile,
+      1
+    ).subscribe({
       next: (createdImage: ProductImage) => {
-        this.snackBar.open('Mobile image saved successfully!', 'Close', { duration: 3000, panelClass: 'success-snackbar' });
+        this.snackBar.open('Mobile image uploaded successfully!', 'Close', { 
+          duration: 3000, 
+          panelClass: 'success-snackbar' 
+        });
+        this.mobileImageFile.set(null);
+        this.mobileImageFileName.set('');
+        this.mobileImageError.set('');
         this.loadProductImages();
         this.uploadingImageType.set(null);
       },
       error: (err: any) => {
-        console.error('Error saving mobile image:', err);
-        this.mobileImageError.set(err.error?.message || 'Error saving image');
-        this.snackBar.open('Error saving mobile image', 'Close', { duration: 3000, panelClass: 'error-snackbar' });
+        console.error('Error uploading mobile image:', err);
+        this.mobileImageError.set(err.error?.message || 'Error uploading image');
+        this.snackBar.open('Error uploading mobile image', 'Close', { 
+          duration: 3000, 
+          panelClass: 'error-snackbar' 
+        });
         this.uploadingImageType.set(null);
       }
     });
@@ -281,7 +352,8 @@ export class ProductImageUploadComponent {
     if (mobileImage) {
       this.imageService.deleteImage(this.productId, mobileImage.id).subscribe({
         next: () => {
-          this.mobileImageUrl.set('');
+          this.mobileImageFile.set(null);
+          this.mobileImageFileName.set('');
           this.mobileImagePreview.set('');
           this.mobileImageError.set('');
           this.snackBar.open('Mobile image removed', 'Close', { duration: 3000 });
@@ -296,40 +368,46 @@ export class ProductImageUploadComponent {
   }
 
   /**
-   * Add gallery image
+   * Add gallery image file
    */
-  addGalleryImage() {
-    if (!this.galleryImageInput().trim()) {
-      this.snackBar.open('Please enter an image URL', 'Close', { duration: 3000, panelClass: 'warn-snackbar' });
-      return;
-    }
+  addGalleryImage(index: number) {
+    const galleryImages = this.galleryImages();
+    if (index < 0 || index >= galleryImages.length) return;
 
-    const currentGallery = this.galleryImages();
-    if (currentGallery.length >= 8) {
-      this.snackBar.open('Maximum 8 gallery images allowed', 'Close', { duration: 3000, panelClass: 'warn-snackbar' });
+    const imageData = galleryImages[index];
+    const file = imageData.file;
+    
+    if (!file) {
+      this.snackBar.open('Please select an image file', 'Close', { 
+        duration: 3000, 
+        panelClass: 'warn-snackbar' 
+      });
       return;
     }
 
     this.uploadingImageType.set(ProductImageType.Gallery);
-    const imageUrl = this.galleryImageInput();
-    const displayOrder = currentGallery.length + 2;
+    const displayOrder = index + 2; // Main=0, Mobile=1, Gallery=2+
 
-    const imageData: ProductImageCreateUpdate = {
-      imageUrl,
-      imageType: ProductImageType.Gallery,
+    this.imageService.uploadImageFile(
+      this.productId,
+      file,
+      ProductImageType.Gallery,
       displayOrder
-    };
-
-    this.imageService.createImage(this.productId, imageData).subscribe({
-      next: (createdImage) => {
-        this.snackBar.open('Gallery image added successfully!', 'Close', { duration: 3000, panelClass: 'success-snackbar' });
-        this.galleryImageInput.set('');
+    ).subscribe({
+      next: (createdImage: ProductImage) => {
+        this.snackBar.open('Gallery image added successfully!', 'Close', { 
+          duration: 3000, 
+          panelClass: 'success-snackbar' 
+        });
         this.loadProductImages();
         this.uploadingImageType.set(null);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error adding gallery image:', err);
-        this.snackBar.open('Error adding gallery image', 'Close', { duration: 3000, panelClass: 'error-snackbar' });
+        this.snackBar.open('Error adding gallery image', 'Close', { 
+          duration: 3000, 
+          panelClass: 'error-snackbar' 
+        });
         this.uploadingImageType.set(null);
       }
     });
