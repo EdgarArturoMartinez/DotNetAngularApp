@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,10 +12,12 @@ import { CategoryService } from '../features/categories/services/category.servic
 import { CommonModule } from '@angular/common';
 import { VegCategory, VegProductCreateUpdateDto } from '../shared/models/entities';
 import { NotificationService } from '../shared/services/notification.service';
+import { ProductImageUploadComponent } from '../shared/components/product-image-upload/product-image-upload.component';
+import { ProductImage } from '../shared/models/product-image';
 
 @Component({
   selector: 'app-create-vegproduct',
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, RouterLink, CommonModule, MatHint, MatIconModule],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, RouterLink, CommonModule, MatHint, MatIconModule, ProductImageUploadComponent],
   templateUrl: './create-vegproduct.html',
   styleUrl: './create-vegproduct.css',
 })
@@ -27,6 +29,9 @@ export class CreateVegproduct implements OnInit {
   notificationService = inject(NotificationService);
 
   categories: VegCategory[] = [];
+  
+  // Signal to track created product ID (for image upload)
+  createdProductId = signal<number | null>(null);
 
   vegProductForm = this.formBuilder.group({
     name: ['', Validators.required],
@@ -78,10 +83,10 @@ export class CreateVegproduct implements OnInit {
           const productName = formValue.name ?? undefined;
           this.notificationService.created('Product', productName);
           
-          // Navigate after 1 second
-          setTimeout(() => {
-            this.router.navigate(['/products']);
-          }, 1000);
+          // Store the created product ID for image upload
+          if (response && response.id) {
+            this.createdProductId.set(response.id);
+          }
         },
         error: (error) => {
           let errorMessage = 'Unknown error';
@@ -103,5 +108,17 @@ export class CreateVegproduct implements OnInit {
     } else {
       this.notificationService.validationError();
     }
+  }
+
+  /**
+   * Handle when images have been updated
+   * Navigate to products list after image upload is complete
+   */
+  onImagesUpdated(images: ProductImage[]) {
+    // Optional: You can do something with the images here if needed
+    // For now, just navigate after a short delay to allow user to see success message
+    setTimeout(() => {
+      this.router.navigate(['/products']);
+    }, 1500);
   }
 }

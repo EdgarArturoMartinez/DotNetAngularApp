@@ -82,4 +82,19 @@
       </div>
     </form>
   </div>
+
+  <!-- Image Management Section (shown after form is loaded) -->
+  <div class="image-management-section" *ngIf="!isLoading && productId">
+    <div class="section-divider"></div>
+    
+    <div class="section-header">
+      <h3 class="section-title">📸 Manage Product Images</h3>
+      <p class="section-subtitle">Update or add new images to improve your product presentation</p>
+    </div>
+    
+    <app-product-image-upload 
+      [productId]="productId" 
+      (imagesUpdated)="onImagesUpdated($event)">
+    </app-product-image-upload>
+  </div>
 </div>

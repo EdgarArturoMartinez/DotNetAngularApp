@@ -13,4 +13,7 @@ public class VegProducts
 
     // Navigation property for many-to-one relationship with VegCategory
     public virtual VegCategory? VegCategory { get; set; }
+
+    // Navigation property for one-to-many relationship with ProductImage
+    public virtual ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();
 }

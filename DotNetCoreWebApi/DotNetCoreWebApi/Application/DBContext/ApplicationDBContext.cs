@@ -10,6 +10,7 @@ namespace DotNetCoreWebApi.Application.DBContext
 
         public DbSet<Entities.VegProducts> VegProducts { get; set; }
         public DbSet<Entities.VegCategory> VegCategories { get; set; }
+        public DbSet<Entities.ProductImage> ProductImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,6 +31,21 @@ namespace DotNetCoreWebApi.Application.DBContext
                 .WithMany(c => c.VegProducts)
                 .HasForeignKey(p => p.IdCategory)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            // Configure relationship between VegProducts and ProductImage
+            modelBuilder.Entity<Entities.ProductImage>()
+                .HasOne(pi => pi.Product)
+                .WithMany(p => p.Images)
+                .HasForeignKey(pi => pi.IdProduct)
+                .OnDelete(DeleteBehavior.Cascade); // Delete images when product is deleted
+
+            // Configure ProductImage constraints
+            modelBuilder.Entity<Entities.ProductImage>()
+                .HasIndex(pi => pi.IdProduct);
+
+            modelBuilder.Entity<Entities.ProductImage>()
+                .Property(pi => pi.UploadedDate)
+                .HasDefaultValueSql("GETUTCDATE()");
         }
     }
 }

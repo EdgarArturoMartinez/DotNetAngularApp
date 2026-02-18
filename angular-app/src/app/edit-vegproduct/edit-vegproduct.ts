@@ -13,10 +13,12 @@ import { CategoryService } from '../features/categories/services/category.servic
 import { CommonModule } from '@angular/common';
 import { VegCategory, VegProduct, VegProductCreateUpdateDto } from '../shared/models/entities';
 import { NotificationService } from '../shared/services/notification.service';
+import { ProductImageUploadComponent } from '../shared/components/product-image-upload/product-image-upload.component';
+import { ProductImage } from '../shared/models/product-image';
 
 @Component({
   selector: 'app-edit-vegproduct',
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, RouterLink, CommonModule, MatHint, MatIconModule, MatProgressSpinnerModule],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, RouterLink, CommonModule, MatHint, MatIconModule, MatProgressSpinnerModule, ProductImageUploadComponent],
   templateUrl: './edit-vegproduct.html',
   styleUrl: './edit-vegproduct.css',
 })
@@ -199,5 +201,14 @@ export class EditVegproduct implements OnInit {
       console.log('Form invalid or no product ID');
       this.notificationService.validationError();
     }
+  }
+
+  /**
+   * Handle when images have been updated
+   */
+  onImagesUpdated(images: ProductImage[]) {
+    // Optional: You can do something with the images here if needed
+    // For now, just acknowledge that images were updated
+    console.log('Product images updated:', images);
   }
 }

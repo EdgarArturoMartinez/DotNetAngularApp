@@ -209,3 +209,99 @@ mat-icon[matSuffix] {
     font-size: 14px;
   }
 }
+
+/* Image Management Section */
+.section-divider {
+  height: 2px;
+  background: linear-gradient(90deg, rgba(52, 152, 219, 0), rgba(52, 152, 219, 0.3), rgba(52, 152, 219, 0));
+  margin: 40px 0;
+}
+
+.image-management-section {
+  margin-top: 20px;
+  animation: slideUp 0.5s ease-out;
+}
+
+.image-management-section .section-header {
+  margin-bottom: 32px;
+  text-align: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-radius: 12px;
+  border-left: 5px solid #2196f3;
+}
+
+.image-management-section .section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1565c0;
+  margin: 0 0 8px 0;
+}
+
+.image-management-section .section-subtitle {
+  font-size: 14px;
+  color: #0d47a1;
+  margin: 0;
+  line-height: 1.5;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tablet - Image Management */
+@media (max-width: 768px) {
+  .section-divider {
+    margin: 32px 0;
+  }
+
+  .image-management-section {
+    margin-top: 16px;
+  }
+
+  .image-management-section .section-header {
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .image-management-section .section-title {
+    font-size: 18px;
+  }
+
+  .image-management-section .section-subtitle {
+    font-size: 13px;
+  }
+}
+
+/* Mobile - Image Management */
+@media (max-width: 600px) {
+  .section-divider {
+    margin: 24px 0;
+  }
+
+  .image-management-section {
+    margin-top: 12px;
+  }
+
+  .image-management-section .section-header {
+    padding: 16px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+  }
+
+  .image-management-section .section-title {
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+
+  .image-management-section .section-subtitle {
+    font-size: 12px;
+  }
+}

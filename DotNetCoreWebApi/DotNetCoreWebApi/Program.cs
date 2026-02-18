@@ -51,13 +51,18 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Register Generic Repository
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
 // Register Repositories
 builder.Services.AddScoped<IVegCategoryRepository, VegCategoryRepository>();
 builder.Services.AddScoped<IVegProductRepository, VegProductRepository>();
+builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
 
 // Register Services
 builder.Services.AddScoped<IVegCategoryService, VegCategoryService>();
 builder.Services.AddScoped<IVegProductService, VegProductService>();
+builder.Services.AddScoped<IProductImageService, ProductImageService>();
 
 var app = builder.Build();
 

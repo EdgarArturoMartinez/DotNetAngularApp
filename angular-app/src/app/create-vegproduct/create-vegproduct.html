@@ -6,7 +6,8 @@
     </div>
   </div>
 
-  <div class="form-container">
+  <!-- Product Form Section -->
+  <div class="form-container" *ngIf="!createdProductId()">
     <form [formGroup]="vegProductForm" (ngSubmit)="saveChanges()" class="product-form">
       <div class="form-field">
         <mat-form-field appearance="outline" class="full-width">
@@ -76,5 +77,25 @@
         </a>
       </div>
     </form>
+  </div>
+
+  <!-- Image Upload Section (shown after product is created) -->
+  <div class="image-upload-section" *ngIf="createdProductId()">
+    <div class="section-header">
+      <h3 class="section-title">Product Created Successfully! ✅</h3>
+      <p class="section-subtitle">Now add images to your product (optional but recommended for better sales)</p>
+    </div>
+    
+    <app-product-image-upload 
+      [productId]="createdProductId()!" 
+      (imagesUpdated)="onImagesUpdated($event)">
+    </app-product-image-upload>
+
+    <div class="section-actions">
+      <button mat-raised-button color="primary" routerLink="/products" class="continue-btn">
+        <mat-icon>arrow_forward</mat-icon>
+        Continue to Products
+      </button>
+    </div>
   </div>
 </div>
