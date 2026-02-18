@@ -9,11 +9,12 @@ import { CategoryService } from '../features/categories/services/category.servic
 import { VegCategory } from '../shared/models/entities';
 import { DialogService } from '../shared/services/dialog.service';
 import { NotificationService } from '../shared/services/notification.service';
+import { GenericDataTableComponent, ColumnDefinition, TableAction } from '../shared/components/generic-data-table/generic-data-table.component';
 
 @Component({
   selector: 'app-index-vegcategories',
   standalone: true,
-  imports: [MatButtonModule, RouterLink, MatIconModule, CommonModule, MatProgressSpinnerModule, MatTooltipModule],
+  imports: [MatButtonModule, RouterLink, MatIconModule, CommonModule, MatProgressSpinnerModule, MatTooltipModule, GenericDataTableComponent],
   templateUrl: './index-vegcategories.html',
   styleUrl: './index-vegcategories.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,6 +28,22 @@ export class IndexVegcategories implements OnInit {
   categories: VegCategory[] = [];
   isLoading = false;
   error = '';
+
+  // Table configuration
+  columns: ColumnDefinition[] = [
+    { key: 'idCategory', label: 'ID', type: 'number', width: '80px' },
+    { key: 'categoryName', label: 'Category Name', type: 'text' },
+    { key: 'description', label: 'Description', type: 'text' },
+    { key: 'productCount', label: 'Products', type: 'number', width: '100px' },
+    { key: 'createdAt', label: 'Created', type: 'date', width: '150px' }
+  ];
+
+  hiddenColumns: string[] = ['idCategory'];
+
+  actions: TableAction[] = [
+    { label: 'Edit', icon: 'edit', action: 'edit', tooltip: 'Edit this category' },
+    { label: 'Delete', icon: 'delete', action: 'delete', color: 'warn', tooltip: 'Delete this category' }
+  ];
 
   ngOnInit() {
     this.loadCategories();
@@ -54,6 +71,31 @@ export class IndexVegcategories implements OnInit {
         }
         this.isLoading = false;
         this.cdr.markForCheck();
+      }
+    });
+  }
+
+  onEdit(category: VegCategory) {
+    if (!category.idCategory) {
+      this.notificationService.error('Category ID not found. Please refresh and try again.');
+      return;
+    }
+    this.router.navigate(['/categories/edit', category.idCategory]);
+  }
+
+  onDelete(category: VegCategory) {
+    this.dialogService.confirmDelete('Category', category.categoryName).subscribe(confirmed => {
+      if (confirmed) {
+        this.categoryService.delete(category.idCategory!).subscribe({
+          next: () => {
+            this.notificationService.deleted('Category', category.categoryName);
+            this.loadCategories();
+          },
+          error: (error) => {
+            const errorMessage = error.error?.message || error.statusText || 'Unknown error';
+            this.notificationService.saveError('delete', errorMessage);
+          }
+        });
       }
     });
   }

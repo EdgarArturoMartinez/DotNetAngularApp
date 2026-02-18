@@ -41,60 +41,19 @@
       </button>
     </div>
 
-    <!-- PRODUCTS GRID -->
-    <div *ngIf="!isLoading && !error && products.length > 0" class="products-grid">
-      <div class="product-card" *ngFor="let product of products">
-        <div class="product-header">
-          <div class="product-badge">📦</div>
-          <div class="product-name-section">
-            <h3 class="product-name">{{ product.name }}</h3>
-            <span class="product-id" *ngIf="product.id">ID: {{ product.id }}</span>
-          </div>
-        </div>
-
-        <div class="product-body">
-          <div class="price-section">
-            <span class="price-label">Price</span>
-            <span class="price-value">{{ product.price | currency }}</span>
-          </div>
-          <div class="category-section" *ngIf="product.vegCategory">
-            <span class="category-label">Category</span>
-            <span class="category-badge">{{ product.vegCategory.categoryName }}</span>
-          </div>
-          <div class="stock-section">
-            <span class="stock-label">Stock</span>
-            <div class="stock-display">
-              <span class="stock-value">{{ product.stockQuantity || 0 }} units</span>
-              <span class="low-stock-warning" *ngIf="(product.stockQuantity || 0) <= 10">⚠️ Low</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="product-footer">
-          <button 
-            mat-icon-button
-            matTooltip="Edit this product"
-            (click)="editProduct(product)"
-            class="action-btn edit-btn"
-          >
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button 
-            mat-icon-button
-            matTooltip="Delete this product"
-            color="warn"
-            (click)="deleteProduct(product)"
-            class="action-btn delete-btn"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- PRODUCT COUNT -->
-    <div *ngIf="!isLoading && !error && products.length > 0" class="product-count">
-      Showing <strong>{{ products.length }}</strong> product{{ products.length !== 1 ? 's' : '' }}
-    </div>
+    <!-- DATA TABLE WITH LIST/CARD VIEWS, SEARCH, AND PAGINATION -->
+    <app-generic-data-table 
+      *ngIf="!isLoading && !error && products.length > 0"
+      [items]="products"
+      [columns]="columns"
+      [actions]="actions"
+      [hiddenColumns]="hiddenColumns"
+      [cardEmoji]="'📋'"
+      searchPlaceholder="Search products by name, category, description..."
+      noDataMessage="No products match your search criteria"
+      (edit)="onEdit($event)"
+      (delete)="onDelete($event)"
+      (reload)="loadProducts()"
+    ></app-generic-data-table>
   </div>
 </div>

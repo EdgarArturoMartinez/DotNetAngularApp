@@ -21,11 +21,11 @@
 
       <div class="form-field">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Price (USD)</mat-label>
+          <mat-label>Price (COP)</mat-label>
           <input matInput formControlName="price" type="number" placeholder="0.00" (blur)="formatPrice()" min="0" step="0.01">
           <mat-icon matSuffix>attach_money</mat-icon>
           <mat-hint *ngIf="vegProductForm.get('price')?.value">
-            Your price: {{ (vegProductForm.get('price')?.value | currency) || '$0.00' }}
+            Your price: {{ (vegProductForm.get('price')?.value | currency: 'COP') || '$0' }}
           </mat-hint>
           <mat-error *ngIf="vegProductForm.get('price')?.hasError('required')">
             Price is required

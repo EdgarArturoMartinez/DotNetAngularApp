@@ -58,6 +58,9 @@
 /* Products Container */
 .products-container {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 /* State Containers */
@@ -158,221 +161,6 @@
   background-color: #5568d3 !important;
 }
 
-/* Products Grid */
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 24px;
-  animation: fadeIn 0.4s ease-in;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.product-card {
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.product-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-  border-color: #4caf50;
-}
-
-.product-header {
-  padding: 24px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.product-badge {
-  font-size: 32px;
-  line-height: 1;
-}
-
-.product-name-section {
-  flex: 1;
-  min-width: 0;
-}
-
-.product-name {
-  font-size: 18px;
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0 0 4px 0;
-  word-break: break-word;
-}
-
-.product-id {
-  font-size: 12px;
-  color: #95a5a6;
-  display: block;
-}
-
-.product-body {
-  padding: 24px;
-  flex: 1;
-}
-
-.price-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.price-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #7f8c8d;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.price-value {
-  font-size: 28px;
-  font-weight: 700;
-  color: #4caf50;
-}
-
-.category-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.category-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #7f8c8d;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.category-badge {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-.product-footer {
-  padding: 16px 24px;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-.action-btn {
-  transition: all 0.2s ease;
-}
-
-.edit-btn {
-  color: #667eea;
-}
-
-.edit-btn:hover {
-  background-color: rgba(102, 126, 234, 0.1);
-  color: #5568d3;
-}
-
-.delete-btn {
-  color: #ff6b6b;
-}
-
-.delete-btn:hover {
-  background-color: rgba(255, 107, 107, 0.1);
-}
-
-.product-count {
-  text-align: center;
-  margin-top: 32px;
-  font-size: 14px;
-  color: #7f8c8d;
-}
-
-.product-count strong {
-  color: #4caf50;
-  font-weight: 600;
-}
-
-/* Stock Section Styling */
-.stock-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.stock-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #7f8c8d;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.stock-display {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.stock-value {
-  font-size: 16px;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.low-stock-warning {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #dc3545;
-  background-color: #fff3cd;
-  padding: 3px 8px;
-  border-radius: 10px;
-  border: 1px solid #ffc107;
-  animation: pulse-warning 2s ease-in-out infinite;
-}
-
-@keyframes pulse-warning {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
 /* Responsive */
 @media (max-width: 768px) {
   .products-wrapper {
@@ -393,11 +181,6 @@
     justify-content: center;
   }
 
-  .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-  }
-
   .state-container {
     padding: 40px 16px;
     min-height: 250px;
@@ -409,16 +192,8 @@
     font-size: 24px;
   }
 
-  .products-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .product-card {
-    margin: 0 auto;
-    width: 100%;
-  }
-
   .create-button {
-    width: 100%;
+    padding: 10px 16px !important;
+    font-size: 14px !important;
   }
 }

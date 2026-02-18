@@ -41,61 +41,17 @@
       </button>
     </div>
 
-    <!-- CATEGORIES GRID -->
-    <div *ngIf="!isLoading && !error && categories.length > 0" class="categories-grid">
-      <div class="category-card" *ngFor="let category of categories">
-        <div class="category-header">
-          <div class="category-badge">🕋</div>
-          <div class="category-name-section">
-            <h3 class="category-name">{{ category.categoryName }}</h3>
-            <span class="category-id">ID: {{ category.idCategory }}</span>
-          </div>
-        </div>
-
-        <div class="category-body">
-          <div class="description-section" *ngIf="category.description">
-            <span class="description-label">Description</span>
-            <p class="description-text">{{ category.description }}</p>
-          </div>
-          <div class="description-section" *ngIf="!category.description">
-            <span class="description-label">Description</span>
-            <p class="description-text no-description">No description provided</p>
-          </div>
-          <div class="meta-section" *ngIf="category.createdAt">
-            <span class="meta-label">Created</span>
-            <span class="meta-value">{{ category.createdAt | date:'short' }}</span>
-          </div>
-          <div class="meta-section">
-            <span class="meta-label">Products</span>
-            <span class="meta-value">{{ category.productCount || 0 }} item(s)</span>
-          </div>
-        </div>
-
-        <div class="category-footer">
-          <button 
-            mat-icon-button
-            matTooltip="Edit this category"
-            (click)="editCategory(category)"
-            class="action-btn edit-btn"
-          >
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button 
-            mat-icon-button
-            matTooltip="Delete this category"
-            color="warn"
-            (click)="deleteCategory(category)"
-            class="action-btn delete-btn"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- CATEGORY COUNT -->
-    <div *ngIf="!isLoading && !error && categories.length > 0" class="category-count">
-      Showing <strong>{{ categories.length }}</strong> categor{{ categories.length !== 1 ? 'ies' : 'y' }}
-    </div>
-  </div>
-</div>
+    <!-- DATA TABLE WITH LIST/CARD VIEWS, SEARCH, AND PAGINATION -->
+    <app-generic-data-table 
+      *ngIf="!isLoading && !error && categories.length > 0"
+      [items]="categories"
+      [columns]="columns"
+      [actions]="actions"
+      [hiddenColumns]="hiddenColumns"
+      [cardEmoji]="'🕋'"
+      searchPlaceholder="Search categories by name or description..."
+      noDataMessage="No categories match your search criteria"
+      (edit)="onEdit($event)"
+      (delete)="onDelete($event)"
+      (reload)="loadCategories()"
+    ></app-generic-data-table>
