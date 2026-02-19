@@ -25,8 +25,11 @@ export interface VegProduct extends IEntity {
   price: number;
   description?: string;
   stockQuantity?: number;
+  netWeight?: number;
   idCategory?: number;
+  idTypeWeight?: number;
   vegCategory?: VegCategoryBasic;
+  vegTypeWeight?: VegTypeWeightBasic;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -41,6 +44,28 @@ export interface VegCategoryBasic {
 }
 
 /**
+ * VegTypeWeight Entity
+ * Represents a weight/measure type in the system
+ */
+export interface VegTypeWeight extends IEntity {
+  idTypeWeight: number;
+  name: string;
+  abbreviationWeight: string;
+  description?: string;
+  isActive: boolean;
+  createdAt?: string;
+}
+
+/**
+ * Basic VegTypeWeight for nested references and dropdowns
+ */
+export interface VegTypeWeightBasic {
+  idTypeWeight: number;
+  name: string;
+  abbreviationWeight: string;
+}
+
+/**
  * DTO for creating/updating products
  * Used in forms to avoid direct manipulation of the full entity
  */
@@ -49,7 +74,9 @@ export interface VegProductCreateUpdateDto {
   price: number;
   description?: string;
   stockQuantity?: number;
+  netWeight?: number;
   idCategory?: number | null;
+  idTypeWeight?: number | null;
 }
 
 /**
@@ -58,6 +85,16 @@ export interface VegProductCreateUpdateDto {
 export interface VegCategoryCreateUpdateDto {
   categoryName: string;
   description?: string;
+}
+
+/**
+ * DTO for creating/updating weight types
+ */
+export interface VegTypeWeightCreateUpdateDto {
+  name: string;
+  abbreviationWeight: string;
+  description?: string;
+  isActive: boolean;
 }
 
 /**

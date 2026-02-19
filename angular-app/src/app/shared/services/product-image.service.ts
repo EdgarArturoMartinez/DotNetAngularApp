@@ -29,7 +29,9 @@ export class ProductImageService {
    * Get the main/hero image for a product
    */
   getMainImage(productId: number): Observable<ProductImage> {
-    return this.http.get<ProductImage>(`${this.apiUrl}/products/${productId}/images/main`);
+    return this.http.get<ProductImage>(`${this.apiUrl}/products/${productId}/images/main`, {
+      reportProgress: false
+    });
   }
 
   /**

@@ -35,12 +35,15 @@ export class IndexProducts implements OnInit {
     { key: 'price', label: 'Price', type: 'currency', width: '150px' },
     { key: 'vegCategory.categoryName', label: 'Category', type: 'text' },
     { key: 'stockQuantity', label: 'Stock', type: 'number', width: '100px' },
+    { key: 'netWeight', label: 'Net Weight', type: 'number', width: '100px' },
+    { key: 'vegTypeWeight.abbreviationWeight', label: 'Unit', type: 'text', width: '80px' },
     { key: 'description', label: 'Description', type: 'text' }
   ];
 
   hiddenColumns: string[] = ['id'];
 
   actions: TableAction[] = [
+    { label: 'View Details', icon: 'info', action: 'view', tooltip: 'View full product details', isPrimary: true },
     { label: 'Edit', icon: 'edit', action: 'edit', tooltip: 'Edit this product' },
     { label: 'Delete', icon: 'delete', action: 'delete', color: 'warn', tooltip: 'Delete this product' }
   ];
@@ -68,6 +71,16 @@ export class IndexProducts implements OnInit {
     });
   }
 
+  onView(product: VegProduct) {
+    if (!product.id) {
+      this.notificationService.error('Product ID not found. Please refresh and try again.');
+      return;
+    }
+    // TODO: Navigate to product detail page when implemented
+    // this.router.navigate(['/products/detail', product.id]);
+    this.notificationService.info('Product detail view will be available soon!');
+  }
+
   onEdit(product: VegProduct) {
     if (!product.id) {
       this.notificationService.error('Product ID not found. Please refresh and try again.');
@@ -82,6 +95,10 @@ export class IndexProducts implements OnInit {
         this.productService.delete(product.id!).subscribe({
           next: () => {
             this.notificationService.deleted('Product', product.name);
+            // Remove the deleted product from the array immediately for instant UI update
+            this.products = this.products.filter(p => p.id !== product.id);
+            this.cdr.markForCheck();
+            // Also reload to ensure data consistency
             this.loadProducts();
           },
           error: (error) => {
@@ -108,6 +125,10 @@ export class IndexProducts implements OnInit {
         this.productService.delete(product.id!).subscribe({
           next: () => {
             this.notificationService.deleted('Product', product.name);
+            // Remove the deleted product from the array immediately for instant UI update
+            this.products = this.products.filter(p => p.id !== product.id);
+            this.cdr.markForCheck();
+            // Also reload to ensure data consistency
             this.loadProducts();
           },
           error: (error) => {

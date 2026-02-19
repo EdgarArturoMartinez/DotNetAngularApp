@@ -47,6 +47,17 @@
   width: 100%;
 }
 
+.form-field-row {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+.half-width {
+  flex: 1;
+  min-width: 0;
+}
+
 .full-width {
   width: 100%;
 }
@@ -168,6 +179,15 @@ mat-icon[matSuffix] {
 
   .product-form {
     gap: 16px;
+  }
+
+  .form-field-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .half-width {
+    width: 100%;
   }
 
   .form-actions {

@@ -10,8 +10,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductService } from '../features/products/services/product.service';
 import { CategoryService } from '../features/categories/services/category.service';
+import { VegTypeWeightService } from '../shared/services/veg-type-weight.service';
 import { CommonModule } from '@angular/common';
-import { VegCategory, VegProduct, VegProductCreateUpdateDto } from '../shared/models/entities';
+import { VegCategory, VegProduct, VegProductCreateUpdateDto, VegTypeWeightBasic } from '../shared/models/entities';
 import { NotificationService } from '../shared/services/notification.service';
 import { ProductImageUploadComponent } from '../shared/components/product-image-upload/product-image-upload.component';
 import { ProductImage } from '../shared/models/product-image';
@@ -26,6 +27,7 @@ export class EditVegproduct implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   productService = inject(ProductService);
   categoryService = inject(CategoryService);
+  typeWeightService = inject(VegTypeWeightService);
   router = inject(Router);
   notificationService = inject(NotificationService);
   activatedRoute = inject(ActivatedRoute);
@@ -34,18 +36,22 @@ export class EditVegproduct implements OnInit {
   productId: number | null = null;
   isLoading = true;
   categories: VegCategory[] = [];
+  weightTypes: VegTypeWeightBasic[] = [];
 
   vegProductForm = this.formBuilder.group({
     name: ['', Validators.required],
     price: ['', Validators.required],
     description: [''],
     stockQuantity: [0, Validators.required],
-    idCategory: [null as number | null]
+    netWeight: [0, Validators.required],
+    idCategory: [null as number | null],
+    idTypeWeight: [null as number | null]
   });
 
   ngOnInit() {
-    // Load categories first
+    // Load categories and weight types first
     this.loadCategories();
+    this.loadWeightTypes();
     
     // Get the product ID from the route parameters
     this.activatedRoute.paramMap.subscribe(params => {
@@ -82,6 +88,18 @@ export class EditVegproduct implements OnInit {
     });
   }
 
+  loadWeightTypes() {
+    this.typeWeightService.getActiveTypes().subscribe({
+      next: (data) => {
+        this.weightTypes = data;
+        console.log('Weight types loaded for dropdown:', this.weightTypes);
+      },
+      error: (error) => {
+        console.error('Error loading weight types:', error);
+      }
+    });
+  }
+
   loadProduct() {
     console.log('loadProduct called, productId:', this.productId);
     if (!this.productId) {
@@ -101,7 +119,9 @@ export class EditVegproduct implements OnInit {
           price: product.price.toFixed(2),
           description: product.description || '',
           stockQuantity: product.stockQuantity || 0,
-          idCategory: product.idCategory || null
+          netWeight: product.netWeight || 0,
+          idCategory: product.idCategory || null,
+          idTypeWeight: product.idTypeWeight || null
         });
         
         console.log('Form populated with:', this.vegProductForm.value);
@@ -165,7 +185,9 @@ export class EditVegproduct implements OnInit {
         price: parseFloat(String(formValue.price)),
         description: formValue.description || undefined,
         stockQuantity: formValue.stockQuantity || 0,
-        idCategory: formValue.idCategory || null
+        netWeight: formValue.netWeight || 0,
+        idCategory: formValue.idCategory || null,
+        idTypeWeight: formValue.idTypeWeight || null
       };
       
       console.log('Submitting product data:', productData);

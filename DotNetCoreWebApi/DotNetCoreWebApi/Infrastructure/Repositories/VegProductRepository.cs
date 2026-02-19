@@ -18,6 +18,7 @@ public class VegProductRepository : Repository<VegProducts>, IVegProductReposito
     {
         return await _dbSet
             .Include(p => p.VegCategory)
+            .Include(p => p.VegTypeWeight)
             .AsNoTracking()
             .ToListAsync();
     }
@@ -26,6 +27,7 @@ public class VegProductRepository : Repository<VegProducts>, IVegProductReposito
     {
         return await _dbSet
             .Include(p => p.VegCategory)
+            .Include(p => p.VegTypeWeight)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == id);
     }
@@ -34,6 +36,7 @@ public class VegProductRepository : Repository<VegProducts>, IVegProductReposito
     {
         return await _dbSet
             .Include(p => p.VegCategory)
+            .Include(p => p.VegTypeWeight)
             .Where(p => p.IdCategory == categoryId)
             .AsNoTracking()
             .ToListAsync();

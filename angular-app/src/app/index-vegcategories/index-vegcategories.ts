@@ -41,6 +41,7 @@ export class IndexVegcategories implements OnInit {
   hiddenColumns: string[] = ['idCategory'];
 
   actions: TableAction[] = [
+    { label: 'View Details', icon: 'info', action: 'view', tooltip: 'View full category details', isPrimary: true },
     { label: 'Edit', icon: 'edit', action: 'edit', tooltip: 'Edit this category' },
     { label: 'Delete', icon: 'delete', action: 'delete', color: 'warn', tooltip: 'Delete this category' }
   ];
@@ -75,6 +76,16 @@ export class IndexVegcategories implements OnInit {
     });
   }
 
+  onView(category: VegCategory) {
+    if (!category.idCategory) {
+      this.notificationService.error('Category ID not found. Please refresh and try again.');
+      return;
+    }
+    // TODO: Navigate to category detail page when implemented
+    // this.router.navigate(['/categories/detail', category.idCategory]);
+    this.notificationService.info('Category detail view will be available soon!');
+  }
+
   onEdit(category: VegCategory) {
     if (!category.idCategory) {
       this.notificationService.error('Category ID not found. Please refresh and try again.');
@@ -89,6 +100,10 @@ export class IndexVegcategories implements OnInit {
         this.categoryService.delete(category.idCategory!).subscribe({
           next: () => {
             this.notificationService.deleted('Category', category.categoryName);
+            // Remove the deleted category from the array immediately for instant UI update
+            this.categories = this.categories.filter(c => c.idCategory !== category.idCategory);
+            this.cdr.markForCheck();
+            // Also reload to ensure data consistency
             this.loadCategories();
           },
           error: (error) => {
@@ -115,6 +130,10 @@ export class IndexVegcategories implements OnInit {
         this.categoryService.delete(category.idCategory!).subscribe({
           next: () => {
             this.notificationService.deleted('Category', category.categoryName);
+            // Remove the deleted category from the array immediately for instant UI update
+            this.categories = this.categories.filter(c => c.idCategory !== category.idCategory);
+            this.cdr.markForCheck();
+            // Also reload to ensure data consistency
             this.loadCategories();
           },
           error: (error) => {

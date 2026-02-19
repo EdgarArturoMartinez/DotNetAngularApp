@@ -1,0 +1,67 @@
+<div class="form-wrapper">
+  <div class="form-header">
+    <div>
+      <h2 class="form-title">Create New Weight/Measure Type</h2>
+      <p class="form-subtitle">Add a new unit of measurement for products</p>
+    </div>
+  </div>
+
+  <div class="form-container">
+    <form [formGroup]="vegTypeWeightForm" (ngSubmit)="saveChanges()" class="type-weight-form">
+      <div class="form-field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" placeholder="e.g., Kilograms" type="text" required>
+          <mat-icon matSuffix>straighten</mat-icon>
+          <mat-error *ngIf="vegTypeWeightForm.get('name')?.hasError('required')">
+            Name is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Abbreviation</mat-label>
+          <input matInput formControlName="abbreviationWeight" placeholder="e.g., Kg" type="text" required maxlength="10">
+          <mat-icon matSuffix>text_fields</mat-icon>
+          <mat-error *ngIf="vegTypeWeightForm.get('abbreviationWeight')?.hasError('required')">
+            Abbreviation is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea 
+            matInput 
+            formControlName="description" 
+            placeholder="Describe this measurement unit..."
+            rows="4"
+          ></textarea>
+          <mat-icon matSuffix>description</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div class="form-field">
+        <mat-slide-toggle formControlName="isActive" color="primary">
+          <span class="toggle-label">
+            <mat-icon>visibility</mat-icon>
+            Active (available for product selection)
+          </span>
+        </mat-slide-toggle>
+      </div>
+
+      <div class="form-actions">
+        <button mat-flat-button type="submit" class="submit-btn" [disabled]="!vegTypeWeightForm.valid">
+          <mat-icon>check_circle</mat-icon>
+          Create Weight Type
+        </button>
+        <a mat-stroked-button routerLink="/admin/weight-types" class="cancel-btn">
+          <mat-icon>close</mat-icon>
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

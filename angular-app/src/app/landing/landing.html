@@ -42,6 +42,14 @@
           <mat-icon>add_circle</mat-icon>
           Add Product
         </a>
+        <a routerLink="/admin/categories/create" mat-stroked-button color="primary">
+          <mat-icon>category</mat-icon>
+          Add Category
+        </a>
+        <a routerLink="/admin/weight-types/create" mat-stroked-button color="accent">
+          <mat-icon>straighten</mat-icon>
+          Add Weight Type
+        </a>
       </div>
     </div>
 
@@ -215,6 +223,10 @@
         <a routerLink="/admin/products" mat-raised-button color="primary" class="action-btn">
           <mat-icon>list</mat-icon>
           View All Products
+        </a>
+        <a routerLink="/admin/weight-types" mat-raised-button color="accent" class="action-btn">
+          <mat-icon>straighten</mat-icon>
+          Manage Weight Types
         </a>
         <button mat-raised-button class="action-btn refresh-btn" (click)="refreshDashboard()">
           <mat-icon>refresh</mat-icon>

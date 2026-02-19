@@ -9,8 +9,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router, RouterLink } from '@angular/router';
 import { ProductService } from '../features/products/services/product.service';
 import { CategoryService } from '../features/categories/services/category.service';
+import { VegTypeWeightService } from '../shared/services/veg-type-weight.service';
 import { CommonModule } from '@angular/common';
-import { VegCategory, VegProductCreateUpdateDto } from '../shared/models/entities';
+import { VegCategory, VegProductCreateUpdateDto, VegTypeWeightBasic } from '../shared/models/entities';
 import { NotificationService } from '../shared/services/notification.service';
 import { ProductImageUploadComponent } from '../shared/components/product-image-upload/product-image-upload.component';
 import { ProductImage } from '../shared/models/product-image';
@@ -25,10 +26,12 @@ export class CreateVegproduct implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   productService = inject(ProductService);
   categoryService = inject(CategoryService);
+  typeWeightService = inject(VegTypeWeightService);
   router = inject(Router);
   notificationService = inject(NotificationService);
 
   categories: VegCategory[] = [];
+  weightTypes: VegTypeWeightBasic[] = [];
   
   // Use a dummy product ID (0) for new products - image component handles this
   tempProductId = signal<number>(0);
@@ -39,11 +42,14 @@ export class CreateVegproduct implements OnInit {
     price: ['', Validators.required],
     description: [''],
     stockQuantity: [0, Validators.required],
-    idCategory: [null as number | null]
+    netWeight: [0, Validators.required],
+    idCategory: [null as number | null],
+    idTypeWeight: [null as number | null]
   });
 
   ngOnInit() {
     this.loadCategories();
+    this.loadWeightTypes();
   }
 
   loadCategories() {
@@ -54,6 +60,18 @@ export class CreateVegproduct implements OnInit {
       },
       error: (error) => {
         console.error('Error loading categories:', error);
+      }
+    });
+  }
+
+  loadWeightTypes() {
+    this.typeWeightService.getActiveTypes().subscribe({
+      next: (data) => {
+        this.weightTypes = data;
+        console.log('Weight types loaded for dropdown:', this.weightTypes);
+      },
+      error: (error) => {
+        console.error('Error loading weight types:', error);
       }
     });
   }
@@ -76,7 +94,9 @@ export class CreateVegproduct implements OnInit {
         price: parseFloat(formValue.price || '0'),
         description: formValue.description || undefined,
         stockQuantity: formValue.stockQuantity || 0,
-        idCategory: formValue.idCategory || null
+        netWeight: formValue.netWeight || 0,
+        idCategory: formValue.idCategory || null,
+        idTypeWeight: formValue.idTypeWeight || null
       };
       
       this.productService.create(productData).subscribe({
@@ -88,6 +108,12 @@ export class CreateVegproduct implements OnInit {
           if (response && response.id) {
             this.tempProductId.set(response.id);
           }
+
+          // Navigate to products list after a short delay
+          // This allows the user to see the success message
+          setTimeout(() => {
+            this.router.navigate(['/products']);
+          }, 1500);
         },
         error: (error) => {
           let errorMessage = 'Unknown error';

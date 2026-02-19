@@ -51,6 +51,7 @@
       [cardEmoji]="'📋'"
       searchPlaceholder="Search products by name, category, description..."
       noDataMessage="No products match your search criteria"
+      (view)="onView($event)"
       (edit)="onEdit($event)"
       (delete)="onDelete($event)"
       (reload)="loadProducts()"

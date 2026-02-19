@@ -2,13 +2,17 @@
   <div class="navbar-content">
     <div class="navbar-brand">
       <span class="brand-icon">🥗</span>
-      <span class="app-title">VegShop</span>
+      <span class="app-title">VeggyWorldShop</span>
       <span class="brand-tagline">Admin Panel</span>
     </div>
 
     <span class="spacer"></span>
 
     <nav class="navbar-actions">
+      <a routerLink="/" mat-button routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-action">
+        <mat-icon>home</mat-icon>
+        <span>Home</span>
+      </a>
       <a routerLink="/admin" mat-button routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-action">
         <mat-icon>dashboard</mat-icon>
         <span>Dashboard</span>
@@ -20,6 +24,10 @@
       <a routerLink="/admin/categories" mat-button routerLinkActive="active" class="nav-action">
         <mat-icon>category</mat-icon>
         <span>Categories</span>
+      </a>
+      <a routerLink="/admin/weight-types" mat-button routerLinkActive="active" class="nav-action">
+        <mat-icon>straighten</mat-icon>
+        <span>Weight Types</span>
       </a>
       <button mat-icon-button class="nav-action-btn" matTooltip="Settings">
         <mat-icon>settings</mat-icon>

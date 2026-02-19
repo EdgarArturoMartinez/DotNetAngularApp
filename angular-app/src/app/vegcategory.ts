@@ -5,3 +5,9 @@ export interface VegCategory {
   createdAt?: string;
   productCount?: number;
 }
+
+export interface VegTypeWeightBasic {
+  idTypeWeight: number;
+  name: string;
+  abbreviationWeight: string;
+}

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { VegProductCreation } from './vegproduct.models';
 import { environment } from '../environments/environment';
-import { VegCategory } from './vegcategory';  
+import { VegCategory, VegTypeWeightBasic } from './vegcategory';  
 
 @Injectable({
   providedIn: 'root',
@@ -41,6 +41,9 @@ export interface VegProduct {
   price: number;
   description?: string;
   stockQuantity?: number;
+  netWeight?: number;
   idCategory?: number;
+  idTypeWeight?: number;
   vegCategory?: VegCategory;
+  vegTypeWeight?: VegTypeWeightBasic;
 }

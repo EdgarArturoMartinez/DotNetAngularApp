@@ -1,0 +1,60 @@
+<div class="weight-types-wrapper">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-content">
+      <h1 class="page-title">Weight/Measure Types</h1>
+      <p class="page-subtitle">Manage units of measurement for products (kg, grams, liters, etc.)</p>
+    </div>
+    <button mat-flat-button routerLink="/admin/weight-types/create" class="create-button">
+      <mat-icon>add_circle</mat-icon>
+      Add New Weight Type
+    </button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="weight-types-container">
+    <!-- LOADING STATE -->
+    <div *ngIf="isLoading" class="state-container loading-state">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading weight types...</p>
+    </div>
+
+    <!-- ERROR STATE -->
+    <div *ngIf="!isLoading && error" class="state-container error-state">
+      <div class="error-icon">⚠️</div>
+      <h3>Unable to Load Weight Types</h3>
+      <p class="error-text">{{ error }}</p>
+      <button mat-stroked-button (click)="loadTypeWeights()" class="retry-btn">
+        <mat-icon>refresh</mat-icon>
+        Try Again
+      </button>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="!isLoading && !error && typeWeights.length === 0" class="state-container empty-state">
+      <div class="empty-icon">⚖️</div>
+      <h3>No Weight Types Yet</h3>
+      <p>Create weight types to specify product measurements</p>
+      <button mat-flat-button routerLink="/admin/weight-types/create" class="empty-button">
+        <mat-icon>add</mat-icon>
+        Create Your First Weight Type
+      </button>
+    </div>
+
+    <!-- DATA TABLE WITH LIST/CARD VIEWS, SEARCH, AND PAGINATION -->
+    <app-generic-data-table 
+      *ngIf="!isLoading && !error && typeWeights.length > 0"
+      [items]="typeWeights"
+      [columns]="columns"
+      [actions]="actions"
+      [hiddenColumns]="hiddenColumns"
+      [cardEmoji]="'⚖️'"
+      searchPlaceholder="Search weight types by name or abbreviation..."
+      noDataMessage="No weight types match your search criteria"
+      (edit)="onEdit($event)"
+      (delete)="onDelete($event)"
+      (booleanToggle)="onBooleanToggle($event)"
+      (reload)="loadTypeWeights()"
+    ></app-generic-data-table>
+  </div>
+</div>

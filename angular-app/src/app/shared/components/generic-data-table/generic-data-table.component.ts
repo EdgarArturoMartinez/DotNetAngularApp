@@ -13,7 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 export interface ColumnDefinition {
   key: string;
   label: string;
-  type?: 'text' | 'currency' | 'date' | 'number' | 'custom';
+  type?: 'text' | 'currency' | 'date' | 'number' | 'custom' | 'boolean';
   sortable?: boolean;
   width?: string;
   customTemplate?: (item: any) => string;
@@ -24,7 +24,8 @@ export interface TableAction {
   icon: string;
   color?: string;
   tooltip?: string;
-  action: 'edit' | 'delete' | 'custom';
+  action: 'edit' | 'delete' | 'view' | 'custom';
+  isPrimary?: boolean; // Mark as primary action for special styling
 }
 
 @Component({
@@ -58,7 +59,9 @@ export class GenericDataTableComponent implements OnChanges {
   
   @Output() edit = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
+  @Output() view = new EventEmitter<any>();
   @Output() customAction = new EventEmitter<{ action: string; item: any }>();
+  @Output() booleanToggle = new EventEmitter<{ key: string; item: any; value: boolean }>();
   @Output() reload = new EventEmitter<void>();
 
   // Signals for reactive state
@@ -233,6 +236,9 @@ export class GenericDataTableComponent implements OnChanges {
 
   onActionClick(action: TableAction, item: any) {
     switch (action.action) {
+      case 'view':
+        this.view.emit(item);
+        break;
       case 'edit':
         this.edit.emit(item);
         break;
@@ -262,12 +268,16 @@ export class GenericDataTableComponent implements OnChanges {
       : this.getVisibleColumns().map(c => c.key);
     
     if (this.displayActionsColumn()) {
-      cols.push('actions');
+      cols.unshift('actions');
     }
     return cols;
   }
 
   trackByIndex(index: number): number {
     return index;
+  }
+
+  onBooleanToggle(columnKey: string, item: any, value: boolean) {
+    this.booleanToggle.emit({ key: columnKey, item, value });
   }
 }

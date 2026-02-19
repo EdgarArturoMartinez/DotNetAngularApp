@@ -4,5 +4,6 @@ export interface VegProductCreation{
     price: number;
     description?: string;
     stockQuantity?: number;
+    netWeight?: number;
     idCategory?: number | null;
 }

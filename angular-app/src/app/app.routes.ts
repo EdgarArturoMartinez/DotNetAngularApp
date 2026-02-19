@@ -9,6 +9,9 @@ import { EditVegproduct } from './edit-vegproduct/edit-vegproduct';
 import { IndexVegcategories } from './index-vegcategories/index-vegcategories';
 import { CreateVegcategory } from './create-vegcategory/create-vegcategory';
 import { EditVegcategory } from './edit-vegcategory/edit-vegcategory';
+import { IndexVegtypeweights } from './index-vegtypeweights/index-vegtypeweights';
+import { CreateVegtypeweight } from './create-vegtypeweight/create-vegtypeweight';
+import { EditVegtypeweight } from './edit-vegtypeweight/edit-vegtypeweight';
 
 // New architecture imports from features folder (commented out - features folder was removed)
 // import { ProductIndexComponent } from './features/products/product-index.component';
@@ -82,6 +85,23 @@ export const routes: Routes = [
         path: 'admin/categories/edit/:id', 
         component: EditVegcategory,
         title: 'Edit Category - Admin'
+    },
+    
+    // Weight Types Management
+    { 
+        path: 'admin/weight-types', 
+        component: IndexVegtypeweights,
+        title: 'Manage Weight Types - Admin'
+    },
+    { 
+        path: 'admin/weight-types/create', 
+        component: CreateVegtypeweight,
+        title: 'Create Weight Type - Admin'
+    },
+    { 
+        path: 'admin/weight-types/edit/:id', 
+        component: EditVegtypeweight,
+        title: 'Edit Weight Type - Admin'
     },
     
     // Fallback for old admin URLs (redirect to new admin routes)

@@ -70,6 +70,28 @@
         </mat-form-field>
       </div>
 
+      <div class="form-field-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Net Weight</mat-label>
+          <input matInput formControlName="netWeight" type="number" placeholder="e.g., 500">
+          <mat-icon matSuffix>scale</mat-icon>
+          <mat-error *ngIf="vegProductForm.get('netWeight')?.hasError('required')">
+            Net weight is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Unit</mat-label>
+          <mat-select formControlName="idTypeWeight" placeholder="Select unit">
+            <mat-option [value]="null">None</mat-option>
+            <mat-option *ngFor="let weightType of weightTypes" [value]="weightType.idTypeWeight">
+              {{ weightType.abbreviationWeight }} - {{ weightType.name }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix>straighten</mat-icon>
+        </mat-form-field>
+      </div>
+
       <!-- Image Management Section (INSIDE form, BEFORE buttons) -->
       <div class="image-section-divider"></div>
       

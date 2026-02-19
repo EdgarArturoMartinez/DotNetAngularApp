@@ -1,6 +1,30 @@
 <div class="home-container">
   <!-- Hero Section -->
   <section class="hero-section">
+    <!-- Hero Search Bar -->
+    <div class="hero-search-container" [class.sticky]="isSearchFocused()">
+      <div class="hero-search-wrapper">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input 
+          type="text" 
+          class="hero-search-input"
+          placeholder="Search for fresh vegetables, organic produce..."
+          [(ngModel)]="searchText"
+          (ngModelChange)="onSearchChange($event)"
+          (focus)="onSearchFocus()"
+          (blur)="onSearchBlur()"
+        />
+        <button 
+          *ngIf="searchText()" 
+          mat-icon-button 
+          class="clear-search-btn"
+          (click)="clearSearch()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+    
     <div class="hero-background">
       <div class="hero-content">
         <div class="hero-badge">
@@ -66,6 +90,12 @@
           <div class="floating-emoji emoji-4">🥦</div>
           <div class="floating-emoji emoji-5">🍅</div>
           <div class="floating-emoji emoji-6">🌽</div>
+          <div class="floating-emoji emoji-7">🥒</div>
+          <div class="floating-emoji emoji-8">🍆</div>
+          <div class="floating-emoji emoji-9">🥑</div>
+          <div class="floating-emoji emoji-10">🌶️</div>
+          <div class="floating-emoji emoji-11">🥗</div>
+          <div class="floating-emoji emoji-12">🍓</div>
         </div>
       </div>
     </div>
@@ -75,11 +105,10 @@
   <section id="products" class="products-section">
     <div class="section-header">
       <div class="section-badge featured-badge">
-        <mat-icon>star</mat-icon>
-        <span>Featured Products</span>
+        <mat-icon>{{ searchText() ? 'search' : 'star' }}</mat-icon>
+        <span>{{ searchText() ? 'Search Results' : 'Featured Products' }}</span>
       </div>
-      <h2 class="section-title">Fresh Picks of the Week</h2>
-      <p class="section-subtitle">Handpicked selection of our finest organic products</p>
+      <h2 class="section-title">{{ searchText() ? 'Found ' + filteredProducts().length + ' Products' : 'Fresh Picks of the Week' }}</h2>
     </div>
 
     <!-- Loading State -->
@@ -89,8 +118,8 @@
     </div>
 
     <!-- Products Grid -->
-    <div *ngIf="!isLoading() && featuredProducts().length > 0" class="products-grid">
-      <div *ngFor="let product of featuredProducts()" class="product-card">
+    <div *ngIf="!isLoading() && (searchText() ? filteredProducts() : featuredProducts()).length > 0" class="products-grid">
+      <div *ngFor="let product of (searchText() ? filteredProducts() : featuredProducts())" class="product-card">
         <div class="product-image">
           <img 
             [src]="getProductImageUrl(product.id)" 
@@ -110,7 +139,7 @@
             <span>{{ product.vegCategory.categoryName }}</span>
           </div>
           
-          <h3 class="product-name">{{ product.name }}</h3>
+          <h3 class="product-name">{{ getProductDisplayName(product) }}</h3>
           
           <p class="product-description" *ngIf="product.description">
             {{ product.description }}
@@ -132,9 +161,13 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!isLoading() && featuredProducts().length === 0" class="empty-state">
-      <mat-icon>inventory_2</mat-icon>
-      <p>No products available at the moment</p>
+    <div *ngIf="!isLoading() && (searchText() ? filteredProducts() : featuredProducts()).length === 0" class="empty-state">
+      <mat-icon>{{ searchText() ? 'search_off' : 'inventory_2' }}</mat-icon>
+      <p>{{ searchText() ? 'No products found matching "' + searchText() + '"' : 'No products available at the moment' }}</p>
+      <button *ngIf="searchText()" mat-raised-button class="clear-search-button" (click)="clearSearch()">
+        <mat-icon>clear</mat-icon>
+        Clear Search
+      </button>
     </div>
   </section>
 
@@ -198,46 +231,57 @@
       <p class="section-subtitle">Your health, our priority</p>
     </div>
 
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon green">
-          <mat-icon>verified</mat-icon>
+    <!-- Features Carousel -->
+    <div class="features-carousel-container">
+      <button mat-icon-button class="carousel-nav carousel-nav-left" (click)="scrollFeatures('left')">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      
+      <div class="features-carousel" #featuresCarousel>
+        <div class="feature-card">
+          <div class="feature-icon green">
+            <mat-icon>verified</mat-icon>
+          </div>
+          <h3 class="feature-title">100% Organic</h3>
+          <p class="feature-description">
+            All our products are certified organic, grown without harmful pesticides or chemicals.
+          </p>
         </div>
-        <h3 class="feature-title">100% Organic</h3>
-        <p class="feature-description">
-          All our products are certified organic, grown without harmful pesticides or chemicals.
-        </p>
-      </div>
 
-      <div class="feature-card">
-        <div class="feature-icon blue">
-          <mat-icon>local_shipping</mat-icon>
+        <div class="feature-card">
+          <div class="feature-icon blue">
+            <mat-icon>local_shipping</mat-icon>
+          </div>
+          <h3 class="feature-title">Fast Delivery</h3>
+          <p class="feature-description">
+            Get your fresh produce delivered to your doorstep within 24 hours of ordering.
+          </p>
         </div>
-        <h3 class="feature-title">Fast Delivery</h3>
-        <p class="feature-description">
-          Get your fresh produce delivered to your doorstep within 24 hours of ordering.
-        </p>
-      </div>
 
-      <div class="feature-card">
-        <div class="feature-icon orange">
-          <mat-icon>eco</mat-icon>
+        <div class="feature-card">
+          <div class="feature-icon orange">
+            <mat-icon>eco</mat-icon>
+          </div>
+          <h3 class="feature-title">Sustainable</h3>
+          <p class="feature-description">
+            We source from local farms and use eco-friendly packaging to reduce our carbon footprint.
+          </p>
         </div>
-        <h3 class="feature-title">Sustainable</h3>
-        <p class="feature-description">
-          We source from local farms and use eco-friendly packaging to reduce our carbon footprint.
-        </p>
-      </div>
 
-      <div class="feature-card">
-        <div class="feature-icon purple">
-          <mat-icon>payments</mat-icon>
+        <div class="feature-card">
+          <div class="feature-icon purple">
+            <mat-icon>payments</mat-icon>
+          </div>
+          <h3 class="feature-title">Best Prices</h3>
+          <p class="feature-description">
+            Direct from farm to you, cutting out middlemen to offer the most competitive prices.
+          </p>
         </div>
-        <h3 class="feature-title">Best Prices</h3>
-        <p class="feature-description">
-          Direct from farm to you, cutting out middlemen to offer the most competitive prices.
-        </p>
       </div>
+      
+      <button mat-icon-button class="carousel-nav carousel-nav-right" (click)="scrollFeatures('right')">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
     </div>
   </section>
 

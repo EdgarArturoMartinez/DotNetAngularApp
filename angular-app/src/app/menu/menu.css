@@ -42,7 +42,7 @@
 }
 
 .brand-tagline {
-  color: rgba(255, 255, 255, 0.6);
+  color: white;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 1px;
@@ -63,7 +63,7 @@
 }
 
 .nav-action {
-  color: rgba(255, 255, 255, 0.85);
+  color: white;
   font-size: 13px;
   font-weight: 500;
   text-transform: uppercase;
@@ -91,7 +91,7 @@
 }
 
 .nav-action-btn {
-  color: rgba(255, 255, 255, 0.85) !important;
+  color: white !important;
   transition: all 0.3s ease !important;
   display: flex;
   align-items: center;

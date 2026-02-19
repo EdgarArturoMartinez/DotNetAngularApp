@@ -51,6 +51,7 @@
             class="column-header"
             [class.sorted-column]="sortColumn() === column.key"
             [class.number-column]="column.type === 'number' || column.type === 'currency'"
+            [class.boolean-column]="column.type === 'boolean'"
             (click)="onSortChange(column.key)"
           >
             <div class="header-content">
@@ -63,8 +64,18 @@
             *matCellDef="let element" 
             [style.width]="column.width"
             [class.number-cell]="column.type === 'number' || column.type === 'currency'"
+            [class.boolean-cell]="column.type === 'boolean'"
           >
-            {{ getDisplayValue(element, column) }}
+            <ng-container *ngIf="column.type === 'boolean'; else defaultCell">
+              <input
+                type="checkbox"
+                [checked]="getNestedValue(element, column.key)"
+                (change)="onBooleanToggle(column.key, element, $any($event.target).checked)"
+              >
+            </ng-container>
+            <ng-template #defaultCell>
+              {{ getDisplayValue(element, column) }}
+            </ng-template>
           </td>
         </ng-container>
 
@@ -90,6 +101,7 @@
 
         <!-- Filter Row -->
         <tr class="filter-row">
+          <td *ngIf="displayActionsColumn()" class="filter-cell"></td>
           <ng-container *ngFor="let column of getVisibleColumns()">
             <td class="filter-cell">
               <input 
@@ -101,7 +113,6 @@
               >
             </td>
           </ng-container>
-          <td *ngIf="displayActionsColumn()" class="filter-cell"></td>
         </tr>
 
         <!-- Data Rows -->
@@ -151,7 +162,19 @@
           <ng-container *ngFor="let column of getVisibleColumns(); let first = first">
             <div class="card-field" *ngIf="!first">
               <span class="field-label">{{ column.label }}</span>
-              <span class="field-value">{{ getDisplayValue(item, column) }}</span>
+              <ng-container *ngIf="column.type === 'boolean'; else defaultCardValue">
+                <label class="boolean-field">
+                  <input
+                    type="checkbox"
+                    [checked]="getNestedValue(item, column.key)"
+                    (change)="onBooleanToggle(column.key, item, $any($event.target).checked)"
+                  >
+                  <span class="field-value">{{ getNestedValue(item, column.key) ? 'Active' : 'Inactive' }}</span>
+                </label>
+              </ng-container>
+              <ng-template #defaultCardValue>
+                <span class="field-value">{{ getDisplayValue(item, column) }}</span>
+              </ng-template>
             </div>
           </ng-container>
         </div>
@@ -163,6 +186,7 @@
             mat-icon-button 
             [matTooltip]="action.tooltip || action.label"
             [color]="action.color"
+            [class.primary-action]="action.isPrimary"
             (click)="onActionClick(action, item)"
             class="action-button"
           >

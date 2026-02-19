@@ -166,10 +166,18 @@
   text-align: center;
 }
 
+.column-header.boolean-column {
+  text-align: center;
+}
+
 /* Data Cells */
 .number-cell {
   text-align: center !important;
   font-weight: 500;
+}
+
+.boolean-cell {
+  text-align: center !important;
 }
 
 /* Filter Row */
@@ -310,6 +318,47 @@
   background: #fecaca !important;
 }
 
+/* Sticky Actions Column */
+.column-header.actions-header,
+.actions-cell,
+.filter-row td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: inherit;
+}
+
+.column-header.actions-header {
+  background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%);
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.06);
+}
+
+.column-header.actions-header:hover {
+  background: linear-gradient(to bottom, #f1f5f9 0%, #e2e8f0 100%);
+}
+
+.data-row td.actions-cell {
+  background-color: inherit;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.03);
+}
+
+.data-row:hover td.actions-cell {
+  background-color: inherit;
+}
+
+.data-row:nth-child(even) td.actions-cell {
+  background-color: #fafbfc;
+}
+
+.data-row:nth-child(even):hover td.actions-cell {
+  background-color: #f8fafc;
+}
+
+.filter-row td:first-child {
+  background-color: #ffffff;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.03);
+}
+
 /* Paginator */
 .paginator {
   border-top: 1px solid #e0e6ed;
@@ -428,6 +477,15 @@
   font-size: 13px;
   font-weight: 600;
   color: #7f8c8d;
+.boolean-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.boolean-field input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
@@ -439,6 +497,14 @@
   font-weight: 500;
   word-break: break-word;
   text-align: right;
+  /* Limit to 2 lines with ellipsis for consistent card heights */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+  max-height: 2.8em; /* 1.4 line-height * 2 lines */
 }
 
 .card-footer {
@@ -503,6 +569,29 @@
 .card-view .card-footer .action-button[color="warn"]:active {
   transform: translateY(0) !important;
   box-shadow: 0 2px 6px rgba(255, 107, 107, 0.2) !important;
+}
+
+/* Primary Action Button (View Details) - App's Purple-Blue Palette */
+.card-view .card-footer .action-button.primary-action {
+  color: white !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border-color: transparent !important;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
+  font-weight: 600 !important;
+  order: -1; /* Place first in the footer */
+  margin-right: auto; /* Push to left side */
+}
+
+.card-view .card-footer .action-button.primary-action:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%) !important;
+  border-color: transparent !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.45) !important;
+}
+
+.card-view .card-footer .action-button.primary-action:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.35) !important;
 }
 
 /* Empty State */

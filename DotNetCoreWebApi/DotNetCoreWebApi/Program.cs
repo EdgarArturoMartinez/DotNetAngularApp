@@ -58,12 +58,14 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IVegCategoryRepository, VegCategoryRepository>();
 builder.Services.AddScoped<IVegProductRepository, VegProductRepository>();
 builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
+builder.Services.AddScoped<IVegTypeWeightRepository, VegTypeWeightRepository>();
 
 // Register Services
 builder.Services.AddScoped<IVegCategoryService, VegCategoryService>();
 builder.Services.AddScoped<IVegProductService, VegProductService>();
 builder.Services.AddScoped<IProductImageService, ProductImageService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+builder.Services.AddScoped<IVegTypeWeightService, VegTypeWeightService>();
 
 var app = builder.Build();
 
