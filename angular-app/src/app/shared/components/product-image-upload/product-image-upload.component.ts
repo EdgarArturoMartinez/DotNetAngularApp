@@ -10,6 +10,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProductImage, ProductImageCreateUpdate, ProductImageType, ImageValidationResult } from '../../models/product-image';
 import { ProductImageService } from '../../services/product-image.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-product-image-upload',
@@ -97,18 +98,18 @@ export class ProductImageUploadComponent {
     const galleryImages = images.filter(img => img.imageType === ProductImageType.Gallery);
 
     if (mainImage) {
-      this.mainImagePreview.set(mainImage.imageUrl);
+      this.mainImagePreview.set(this.getFullImageUrl(mainImage.imageUrl));
     }
 
     if (mobileImage) {
-      this.mobileImagePreview.set(mobileImage.imageUrl);
+      this.mobileImagePreview.set(this.getFullImageUrl(mobileImage.imageUrl));
     }
 
     if (galleryImages.length > 0) {
       this.galleryImages.set(
         galleryImages.map(img => ({
           url: img.imageUrl,
-          preview: img.imageUrl,
+          preview: this.getFullImageUrl(img.imageUrl),
           error: ''
         }))
       );
@@ -200,6 +201,20 @@ export class ProductImageUploadComponent {
       });
     };
     reader.readAsDataURL(file);
+  }
+
+  /**
+   * Constructs the full image URL from a relative path
+   * @param relativePath The relative path returned by the API (e.g., "images/product_8_main_20260219_era11fo4.png")
+   * @returns Full URL (e.g., "https://localhost:7020/images/product_8_main_20260219_era11fo4.png")
+   */
+  private getFullImageUrl(relativePath: string): string {
+    // If it's already a full URL or a data URL (FileReader result), return as-is
+    if (relativePath.startsWith('http') || relativePath.startsWith('data:')) {
+      return relativePath;
+    }
+    // Prepend API base URL to relative path
+    return `${environment.apiURL}/${relativePath}`;
   }
 
   /**

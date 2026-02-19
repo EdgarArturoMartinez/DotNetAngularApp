@@ -71,49 +71,6 @@
     </div>
   </section>
 
-  <!-- Categories Section -->
-  <section id="categories" class="categories-section">
-    <div class="section-header">
-      <div class="section-badge">
-        <mat-icon>category</mat-icon>
-        <span>Shop by Category</span>
-      </div>
-      <h2 class="section-title">Explore Our Categories</h2>
-      <p class="section-subtitle">Browse through our carefully curated selection of fresh produce</p>
-    </div>
-
-    <!-- Loading State -->
-    <div *ngIf="isLoading()" class="loading-container">
-      <div class="loading-spinner"></div>
-      <p>Loading categories...</p>
-    </div>
-
-    <!-- Categories Grid -->
-    <div *ngIf="!isLoading() && categories().length > 0" class="categories-grid">
-      <div *ngFor="let category of categories()" class="category-card">
-        <div class="category-icon">
-          <mat-icon>{{ getCategoryIcon(category.categoryName) }}</mat-icon>
-        </div>
-        <h3 class="category-name">{{ category.categoryName }}</h3>
-        <p class="category-description">{{ category.description || 'Fresh and organic ' + category.categoryName.toLowerCase() }}</p>
-        <div class="category-count">
-          <mat-icon>inventory_2</mat-icon>
-          <span>{{ category.productCount || 0 }} products</span>
-        </div>
-        <button mat-stroked-button class="category-button">
-          <span>Browse</span>
-          <mat-icon>arrow_forward</mat-icon>
-        </button>
-      </div>
-    </div>
-
-    <!-- Empty State -->
-    <div *ngIf="!isLoading() && categories().length === 0" class="empty-state">
-      <mat-icon>category</mat-icon>
-      <p>No categories available at the moment</p>
-    </div>
-  </section>
-
   <!-- Featured Products Section -->
   <section id="products" class="products-section">
     <div class="section-header">
@@ -135,9 +92,13 @@
     <div *ngIf="!isLoading() && featuredProducts().length > 0" class="products-grid">
       <div *ngFor="let product of featuredProducts()" class="product-card">
         <div class="product-image">
-          <div class="product-image-placeholder">
-            <mat-icon>shopping_bag</mat-icon>
-          </div>
+          <img 
+            [src]="getProductImageUrl(product.id)" 
+            [alt]="product.name"
+            class="product-main-image"
+            loading="lazy"
+            (error)="$any($event.target).src = PLACEHOLDER_IMAGE"
+          />
           <div class="product-badge" [class]="getStockStatus(product.stockQuantity)">
             {{ getStockText(product.stockQuantity) }}
           </div>
@@ -174,6 +135,59 @@
     <div *ngIf="!isLoading() && featuredProducts().length === 0" class="empty-state">
       <mat-icon>inventory_2</mat-icon>
       <p>No products available at the moment</p>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section id="categories" class="categories-section">
+    <div class="section-header">
+      <div class="section-badge">
+        <mat-icon>category</mat-icon>
+        <span>Shop by Category</span>
+      </div>
+      <h2 class="section-title">Explore Our Categories</h2>
+      <p class="section-subtitle">Browse through our carefully curated selection of fresh produce</p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading()" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading categories...</p>
+    </div>
+
+    <!-- Categories Carousel -->
+    <div *ngIf="!isLoading() && categories().length > 0" class="categories-carousel-container">
+      <button mat-icon-button class="carousel-nav carousel-nav-left" (click)="scrollCategories('left')">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      
+      <div class="categories-carousel" #categoriesCarousel>
+        <div *ngFor="let category of categories()" class="category-card">
+        <div class="category-icon">
+          <mat-icon>{{ getCategoryIcon(category.categoryName) }}</mat-icon>
+        </div>
+        <h3 class="category-name">{{ category.categoryName }}</h3>
+        <p class="category-description">{{ category.description || 'Fresh and organic ' + category.categoryName.toLowerCase() }}</p>
+        <div class="category-count">
+          <mat-icon>inventory_2</mat-icon>
+          <span>{{ category.productCount || 0 }} products</span>
+        </div>
+        <button mat-stroked-button class="category-button">
+          <span>Browse</span>
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </div>
+      
+      <button mat-icon-button class="carousel-nav carousel-nav-right" (click)="scrollCategories('right')">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading() && categories().length === 0" class="empty-state">
+      <mat-icon>category</mat-icon>
+      <p>No categories available at the moment</p>
     </div>
   </section>
 
