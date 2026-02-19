@@ -70,6 +70,20 @@
         </mat-form-field>
       </div>
 
+      <!-- Image Management Section (INSIDE form, BEFORE buttons) -->
+      <div class="image-section-divider"></div>
+      
+      <div class="form-section-header">
+        <h3>Product Images</h3>
+        <span class="section-hint">(Optional - Update or add product images)</span>
+      </div>
+
+      <app-product-image-upload 
+        *ngIf="productId"
+        [productId]="productId" 
+        (imagesUpdated)="onImagesUpdated($event)">
+      </app-product-image-upload>
+
       <div class="form-actions">
         <button mat-flat-button type="submit" class="submit-btn" [disabled]="!vegProductForm.valid">
           <mat-icon>save</mat-icon>
@@ -81,20 +95,5 @@
         </a>
       </div>
     </form>
-  </div>
-
-  <!-- Image Management Section (shown after form is loaded) -->
-  <div class="image-management-section" *ngIf="!isLoading && productId">
-    <div class="section-divider"></div>
-    
-    <div class="section-header">
-      <h3 class="section-title">📸 Manage Product Images</h3>
-      <p class="section-subtitle">Update or add new images to improve your product presentation</p>
-    </div>
-    
-    <app-product-image-upload 
-      [productId]="productId" 
-      (imagesUpdated)="onImagesUpdated($event)">
-    </app-product-image-upload>
   </div>
 </div>

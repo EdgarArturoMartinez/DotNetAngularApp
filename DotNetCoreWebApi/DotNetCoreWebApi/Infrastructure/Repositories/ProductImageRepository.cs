@@ -22,6 +22,7 @@ public class ProductImageRepository : Repository<ProductImage>, IProductImageRep
             .Where(pi => pi.IdProduct == productId && pi.IsActive)
             .OrderBy(pi => pi.DisplayOrder)
             .AsNoTracking()
+            .IgnoreAutoIncludes()
             .ToListAsync();
     }
 

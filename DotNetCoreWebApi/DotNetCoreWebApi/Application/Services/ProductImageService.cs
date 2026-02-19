@@ -26,14 +26,20 @@ public class ProductImageService : IProductImageService
     /// </summary>
     public async Task<IEnumerable<ProductImageDto>> GetImagesByProductIdAsync(int productId)
     {
-        // Verify product exists
-        var product = await _productRepository.GetByIdAsync(productId);
-        if (product == null)
-            throw new KeyNotFoundException($"Product with ID {productId} not found");
-
-        var images = await _imageRepository.GetImagesByProductIdAsync(productId);
-        
-        return images.Select(img => MapToDto(img));
+        try
+        {
+            // Directly get images without checking product existence first
+            // This avoids issues with navigation properties or FindAsync
+            var images = await _imageRepository.GetImagesByProductIdAsync(productId);
+            
+            // Return empty collection if no images (this is valid, not an error)
+            return images?.Select(img => MapToDto(img)) ?? Enumerable.Empty<ProductImageDto>();
+        }
+        catch (Exception ex)
+        {
+            // Log the error but throw it up to the controller for proper handling
+            throw new InvalidOperationException($"Error retrieving images for product {productId}: {ex.Message}", ex);
+        }
     }
 
     /// <summary>

@@ -32,12 +32,21 @@ public class ProductImagesController : ControllerBase
     {
         try
         {
+            _logger.LogInformation($"Attempting to get images for product {productId}");
             var images = await _imageService.GetImagesByProductIdAsync(productId);
+            _logger.LogInformation($"Successfully retrieved {images.Count()} images for product {productId}");
             return Ok(images);
         }
         catch (KeyNotFoundException ex)
         {
+            _logger.LogWarning($"Product not found: {productId} - {ex.Message}");
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error loading images for product {productId}: {ex.GetType().Name}: {ex.Message}");
+            _logger.LogError($"Stack trace: {ex.StackTrace}");
+            return StatusCode(500, new { message = "Error loading product images", error = ex.Message, type = ex.GetType().Name });
         }
     }
 
