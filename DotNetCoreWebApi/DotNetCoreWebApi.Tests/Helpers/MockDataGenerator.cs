@@ -85,9 +85,36 @@ public static class MockDataGenerator
             .RuleFor(i => i.ImageUrl, f => $"images/product_{productId}_{f.Random.AlphaNumeric(8)}.jpg")
             .RuleFor(i => i.ImageType, f => f.Random.Enum<ProductImageType>())
             .RuleFor(i => i.DisplayOrder, f => f.IndexFaker)
-            .RuleFor(i => i.UploadedDate, f => f.Date.Recent(30));
+            .RuleFor(i => i.UploadedDate, f => f.Date.Recent(30))
+            .RuleFor(i => i.Width, f => f.Random.Int(600, 1200))
+            .RuleFor(i => i.Height, f => f.Random.Int(600, 1200))
+            .RuleFor(i => i.IsActive, f => true);
 
         return imageFaker.Generate(count);
+    }
+
+    /// <summary>
+    /// Generates a single ProductImage with specific values
+    /// </summary>
+    public static ProductImage GenerateProductImage(
+        int id,
+        int productId,
+        string imageUrl,
+        ProductImageType imageType = ProductImageType.Main,
+        int displayOrder = 0)
+    {
+        return new ProductImage
+        {
+            Id = id,
+            IdProduct = productId,
+            ImageUrl = imageUrl,
+            ImageType = imageType,
+            DisplayOrder = displayOrder,
+            Width = 1000,
+            Height = 800,
+            IsActive = true,
+            UploadedDate = DateTime.UtcNow
+        };
     }
 
     /// <summary>
@@ -100,8 +127,30 @@ public static class MockDataGenerator
             .RuleFor(w => w.Name, f => f.PickRandom(new[] { "Kilogram", "Gram", "Pound", "Ounce" }))
             .RuleFor(w => w.AbbreviationWeight, f => f.PickRandom(new[] { "Kg", "g", "Lb", "Oz" }))
             .RuleFor(w => w.Description, f => f.Lorem.Sentence())
-            .RuleFor(w => w.IsActive, f => true);
+            .RuleFor(w => w.IsActive, f => true)
+            .RuleFor(w => w.CreatedAt, f => f.Date.Recent(30));
 
         return weightFaker.Generate(count);
+    }
+
+    /// <summary>
+    /// Generates a single VegTypeWeight with specific values
+    /// </summary>
+    public static VegTypeWeight GenerateVegTypeWeight(
+        int id,
+        string name,
+        string abbreviation,
+        string? description = null,
+        bool isActive = true)
+    {
+        return new VegTypeWeight
+        {
+            Id = id,
+            Name = name,
+            AbbreviationWeight = abbreviation,
+            Description = description ?? $"Description for {name}",
+            IsActive = isActive,
+            CreatedAt = DateTime.UtcNow
+        };
     }
 }
