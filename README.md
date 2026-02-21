@@ -157,11 +157,29 @@ This project includes detailed step-by-step guides for common development tasks.
 
 ## 📚 Documentation
 
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Complete architecture guide with detailed scenarios:
-  - **Scenario 1:** Adding a new field to an existing entity (VegProducts) - Step-by-step guide for adding properties
-  - **Scenario 2:** Creating a new entity with foreign key relationship to VegProducts - Complete walkthrough for new tables
-- **[GENERIC-DATA-TABLE-GUIDE.md](GENERIC-DATA-TABLE-GUIDE.md)** - Reusable data table component documentation
-- **[QUICK-START-DATA-TABLE.md](QUICK-START-DATA-TABLE.md)** - Quick start guide for using the generic data table
+All documentation has been organized into the `/docs` folder for better project structure:
+
+### Architecture Documentation (`docs/architecture/`)
+- **[ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md)** - Complete architecture guide with detailed scenarios:
+  - **Scenario 1:** Adding a new field to an existing entity (VegProducts)
+  - **Scenario 2:** Creating a new entity with foreign key relationship to VegProducts
+- **[GENERIC-DATA-TABLE-GUIDE.md](docs/architecture/GENERIC-DATA-TABLE-GUIDE.md)** - Reusable data table component
+- **[QUICK-START-DATA-TABLE.md](docs/architecture/QUICK-START-DATA-TABLE.md)** - Quick start for data tables
+- **[PRODUCT-IMAGES-ARCHITECTURE.md](docs/architecture/PRODUCT-IMAGES-ARCHITECTURE.md)** - Product image system architecture
+- **[FILE-UPLOAD-ARCHITECTURE.md](docs/architecture/FILE-UPLOAD-ARCHITECTURE.md)** - File upload system design
+
+### Implementation Guides (`docs/implementation-guides/`)
+- **[FRONTEND-IMPLEMENTATION-GUIDE.md](docs/implementation-guides/FRONTEND-IMPLEMENTATION-GUIDE.md)** - Frontend development guide
+- **[PRODUCT-IMAGES-GUIDE.md](docs/implementation-guides/PRODUCT-IMAGES-GUIDE.md)** - Product images implementation
+
+### Completed Features (`docs/completed-features/`)
+- **[DATA-TABLE-IMPLEMENTATION-SUMMARY.md](docs/completed-features/DATA-TABLE-IMPLEMENTATION-SUMMARY.md)** - Data table feature summary
+- **[IMPLEMENTATION-COMPLETE.md](docs/completed-features/IMPLEMENTATION-COMPLETE.md)** - General implementation status
+- **[REFACTORING-SUMMARY.md](docs/completed-features/REFACTORING-SUMMARY.md)** - Clean architecture refactoring
+- **[FILE-UPLOAD-IMPLEMENTATION-COMPLETE.md](docs/completed-features/FILE-UPLOAD-IMPLEMENTATION-COMPLETE.md)** - File upload completion
+- **[VEGTYPEWEIGHT-IMPLEMENTATION-COMPLETE.md](docs/completed-features/VEGTYPEWEIGHT-IMPLEMENTATION-COMPLETE.md)** - VegTypeWeight feature
+
+### Angular Documentation
 - **[angular-app/README.md](angular-app/README.md)** - Angular-specific documentation
 
 ---
