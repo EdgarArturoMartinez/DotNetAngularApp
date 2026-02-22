@@ -63,7 +63,7 @@
   width: 100%;
   max-width: 1600px;
   margin: 0 auto;
-  padding: 12px 20px 24px 20px;
+  padding: 12px 40px 24px 40px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px;
@@ -328,7 +328,7 @@
 .categories-section,
 .products-section,
 .features-section {
-  padding: 30px 20px;
+  padding: 30px 40px;
   max-width: 1600px;
   margin: 0 auto;
 }
@@ -389,6 +389,7 @@
 
 .categories-section {
   background: linear-gradient(to bottom, #F1F8E9 0%, #ffffff 100%);
+  padding: 30px 40px;
 }
 
 /* Carousel Container */
@@ -399,6 +400,7 @@
   gap: 16px;
   max-width: 1600px;
   margin: 0 auto;
+  padding: 0 20px;
 }
 
 /* Carousel Scrollable Area */
@@ -838,7 +840,7 @@
    ======================================== */
 
 .cta-section {
-  padding: 100px 20px;
+  padding: 100px 40px;
   background: linear-gradient(to bottom, #f8fafc 0%, #ffffff 100%);
   text-align: center;
 }
@@ -886,7 +888,7 @@
 .footer {
   background: #1e293b;
   color: white;
-  padding: 60px 20px 30px;
+  padding: 60px 40px 30px;
 }
 
 .footer-content {
