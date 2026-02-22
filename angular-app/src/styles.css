@@ -2,6 +2,10 @@
 
 @import "tailwindcss";
 
+:root {
+  --page-padding: 52px;
+}
+
 /* Material Snackbar Notification Styles */
 .success-snackbar {
   --mdc-snackbar-container-color: #4caf50 !important;

@@ -44,6 +44,62 @@ import { CustomerDto, UserRole } from '../../core/models/auth.models';
           </div>
         </div>
 
+        <div class="mobile-auth-menu">
+          <button mat-icon-button [matMenuTriggerFor]="mobileAuthMenu" class="mobile-auth-button" aria-label="Open user menu">
+            <mat-icon>menu</mat-icon>
+          </button>
+          <mat-menu #mobileAuthMenu="matMenu" class="compact-menu">
+            <ng-container *ngIf="isAuthenticated && isAdmin">
+              <button mat-menu-item (click)="navigateTo('/admin')">
+                <mat-icon>dashboard</mat-icon>
+                <span>Admin Dashboard</span>
+              </button>
+              <button mat-menu-item (click)="navigateTo('/admin/products')">
+                <mat-icon>inventory_2</mat-icon>
+                <span>Products</span>
+              </button>
+              <button mat-menu-item (click)="navigateTo('/admin/categories')">
+                <mat-icon>category</mat-icon>
+                <span>Categories</span>
+              </button>
+              <button mat-menu-item (click)="navigateTo('/admin/weight-types')">
+                <mat-icon>scale</mat-icon>
+                <span>Weight Types</span>
+              </button>
+                <button mat-menu-item (click)="navigateTo('/admin/users')">
+                <mat-icon>people</mat-icon>
+                <span>Users</span>
+              </button>
+            </ng-container>
+
+            <ng-container *ngIf="isAuthenticated && currentUser">
+              <button mat-menu-item disabled>
+                <mat-icon>person</mat-icon>
+                <span>{{ currentUser.firstName }} {{ currentUser.lastName }}</span>
+              </button>
+              <button mat-menu-item disabled>
+                <mat-icon>badge</mat-icon>
+                <span>{{ currentUser.role === UserRole.Admin ? 'Admin' : 'Customer' }}</span>
+              </button>
+              <button mat-menu-item (click)="logout()">
+                <mat-icon>logout</mat-icon>
+                <span>Logout</span>
+              </button>
+            </ng-container>
+
+            <ng-container *ngIf="!isAuthenticated">
+              <button mat-menu-item (click)="navigateTo('/login')">
+                <mat-icon>login</mat-icon>
+                <span>Login</span>
+              </button>
+              <button mat-menu-item (click)="navigateTo('/register')">
+                <mat-icon>person_add</mat-icon>
+                <span>Register</span>
+              </button>
+            </ng-container>
+          </mat-menu>
+        </div>
+
         <div class="nav-auth-wrapper">
           <ul class="nav-links">
             <ng-container *ngIf="isAuthenticated && isAdmin">
@@ -70,7 +126,7 @@ import { CustomerDto, UserRole } from '../../core/models/auth.models';
                     <mat-icon>scale</mat-icon>
                     <span>Weight Types</span>
                   </button>
-                  <button mat-menu-item (click)="navigateTo('/admin/manage-users')">
+                      <button mat-menu-item (click)="navigateTo('/admin/users')">
                     <mat-icon>people</mat-icon>
                     <span>Users</span>
                   </button>
@@ -130,7 +186,7 @@ import { CustomerDto, UserRole } from '../../core/models/auth.models';
       justify-content: space-between;
       align-items: center;
       gap: 20px;
-      padding: 0.4rem 20px;
+      padding: 0.4rem var(--page-padding);
       max-width: 1600px;
       margin: 0 auto;
       height: 50px;
@@ -223,6 +279,20 @@ import { CustomerDto, UserRole } from '../../core/models/auth.models';
       align-items: center;
       gap: 1rem;
     }
+
+    .mobile-auth-menu {
+      display: none;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .mobile-auth-button {
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+      color: #2e7d32 !important;
+    }
+
 
     .logo a {
       font-size: 1rem;
@@ -435,19 +505,68 @@ import { CustomerDto, UserRole } from '../../core/models/auth.models';
     @media (max-width: 768px) {
       .header {
         min-height: 48px;
-        max-height: 48px;
-        height: 48px;
+        max-height: none;
+        height: auto;
       }
 
       .nav-container {
         padding: 0.3rem 1rem;
-        height: 48px;
+        height: auto;
+        flex-wrap: wrap;
+        row-gap: 8px;
+      }
+
+      .logo {
+        order: 1;
+      }
+
+      .nav-auth-wrapper {
+        order: 2;
+        flex: 1 1 100%;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: space-between;
+      }
+
+      .nav-auth-wrapper {
+        display: none;
+      }
+
+      .mobile-auth-menu {
+        display: flex;
+        order: 2;
+      }
+
+      .header-search-container {
+        order: 3;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        flex: 1 1 100%;
+      }
+
+      .header-search-wrapper {
+        width: 100%;
       }
 
       .nav-links {
         flex-wrap: wrap;
         gap: 0.75rem;
         justify-content: center;
+      }
+
+      .auth-section {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .user-menu {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
       }
 
       .logo a {

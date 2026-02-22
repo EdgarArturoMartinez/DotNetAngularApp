@@ -13,7 +13,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.25rem 20px !important;
+  padding: 0.25rem var(--page-padding) !important;
   max-width: 1600px;
   margin: 0 auto;
   height: 40px !important;

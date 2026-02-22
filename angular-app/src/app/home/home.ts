@@ -93,6 +93,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   @ViewChild('categoriesCarousel') categoriesCarousel!: ElementRef;
   @ViewChild('featuresCarousel') featuresCarousel!: ElementRef;
+  @ViewChild('productsCarousel') productsCarousel!: ElementRef;
 
   ngOnInit(): void {
     this.loadData();
@@ -229,6 +230,28 @@ export class HomeComponent implements OnInit, OnDestroy {
     const scrollAmount = 320; // Card width + gap
     const scrollDistance = direction === 'left' ? -scrollAmount : scrollAmount;
     
+    carousel.scrollBy({
+      left: scrollDistance,
+      behavior: 'smooth'
+    });
+  }
+
+  /**
+   * Scroll products carousel horizontally
+   */
+  scrollProducts(direction: 'left' | 'right'): void {
+    const carousel = this.productsCarousel?.nativeElement as HTMLElement | undefined;
+    if (!carousel) {
+      return;
+    }
+
+    const firstCard = carousel.querySelector('.product-card') as HTMLElement | null;
+    const gapValue = getComputedStyle(carousel).columnGap || getComputedStyle(carousel).gap;
+    const gap = gapValue ? parseFloat(gapValue) : 0;
+    const cardWidth = firstCard?.offsetWidth ?? 320;
+    const scrollAmount = cardWidth + gap;
+    const scrollDistance = direction === 'left' ? -scrollAmount : scrollAmount;
+
     carousel.scrollBy({
       left: scrollDistance,
       behavior: 'smooth'
