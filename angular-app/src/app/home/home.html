@@ -1,30 +1,6 @@
 <div class="home-container">
   <!-- Hero Section -->
   <section class="hero-section">
-    <!-- Hero Search Bar -->
-    <div class="hero-search-container" [class.sticky]="isSearchFocused()">
-      <div class="hero-search-wrapper">
-        <mat-icon class="search-icon">search</mat-icon>
-        <input 
-          type="text" 
-          class="hero-search-input"
-          placeholder="Search for fresh vegetables, organic produce..."
-          [(ngModel)]="searchText"
-          (ngModelChange)="onSearchChange($event)"
-          (focus)="onSearchFocus()"
-          (blur)="onSearchBlur()"
-        />
-        <button 
-          *ngIf="searchText()" 
-          mat-icon-button 
-          class="clear-search-btn"
-          (click)="clearSearch()"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
-    </div>
-    
     <div class="hero-background">
       <div class="hero-content">
         <div class="hero-badge">
@@ -144,6 +120,7 @@
           <p class="product-description" *ngIf="product.description">
             {{ product.description }}
           </p>
+          <a class="read-more-link" *ngIf="product.description">Read more...</a>
           
           <div class="product-footer">
             <div class="product-price">
@@ -328,10 +305,10 @@
         </ul>
       </div>
 
-      <div class="footer-column">
+      <div class="footer-column" *ngIf="isAuthenticated && isAdmin">
         <h4 class="footer-title">Admin Access</h4>
         <p class="footer-description">Manage your inventory and orders</p>
-        <a routerLink="/admin" mat-stroked-button class="admin-link">
+        <a routerLink="/admin" mat-raised-button color="primary" class="admin-link">
           <mat-icon>admin_panel_settings</mat-icon>
           <span>Admin Panel</span>
         </a>

@@ -1,0 +1,148 @@
+<mat-toolbar class="admin-header" [class.compact]="variant === 'compact'">
+  <div class="header-content">
+    <!-- Brand Section -->
+    <div class="brand-section">
+      <a routerLink="/" class="brand-link">
+        <span class="brand-icon">🥗</span>
+        <div class="brand-text">
+          <span class="brand-name">VeggyWorldShop</span>
+        </div>
+      </a>
+    </div>
+
+    <span class="spacer"></span>
+
+    <!-- Navigation Section -->
+    <nav class="nav-section" *ngIf="isAuthenticated && isAdmin">
+      <!-- Dashboard Link -->
+      <a 
+        routerLink="/admin" 
+        mat-button 
+        class="nav-link"
+        [class.active]="isRouteActive('/admin')"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: true}"
+      >
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </a>
+
+      <!-- Manage Dropdown Menu -->
+      <button 
+        mat-button 
+        [matMenuTriggerFor]="manageMenu"
+        class="nav-link"
+        [class.active]="isManageMenuActive()"
+      >
+        <mat-icon>admin_panel_settings</mat-icon>
+        <span>Manage</span>
+        <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #manageMenu="matMenu" class="admin-menu">
+        <div class="menu-header">
+          <mat-icon>manage_accounts</mat-icon>
+          <span>Entity Management</span>
+        </div>
+        <mat-divider></mat-divider>
+        <a 
+          *ngFor="let item of manageItems"
+          mat-menu-item 
+          [routerLink]="item.route"
+          routerLinkActive="active-menu-item"
+          class="menu-item"
+        >
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </a>
+      </mat-menu>
+
+      <!-- Settings Dropdown (Future expansion) -->
+      <button 
+        mat-button 
+        [matMenuTriggerFor]="settingsMenu"
+        class="nav-link"
+      >
+        <mat-icon>settings</mat-icon>
+        <span class="hide-mobile">Settings</span>
+      </button>
+      <mat-menu #settingsMenu="matMenu" class="admin-menu">
+        <div class="menu-header">
+          <mat-icon>tune</mat-icon>
+          <span>Application Settings</span>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item class="menu-item">
+          <mat-icon>store</mat-icon>
+          <span>Store Settings</span>
+        </button>
+        <button mat-menu-item class="menu-item">
+          <mat-icon>email</mat-icon>
+          <span>Email Configuration</span>
+        </button>
+        <button mat-menu-item class="menu-item">
+          <mat-icon>palette</mat-icon>
+          <span>Theme Settings</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item class="menu-item">
+          <mat-icon>info</mat-icon>
+          <span>About</span>
+        </button>
+      </mat-menu>
+
+      <!-- User Profile Dropdown -->
+      <button 
+        mat-icon-button 
+        [matMenuTriggerFor]="userMenu"
+        class="user-menu-btn"
+      >
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu" class="admin-menu user-menu">
+        <div class="user-info">
+          <div class="user-avatar">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+          <div class="user-details">
+            <div class="user-name">{{ currentUser?.firstName }} {{ currentUser?.lastName }}</div>
+            <div class="user-email">{{ currentUser?.email }}</div>
+            <div class="user-role">
+              <mat-icon class="role-icon">admin_panel_settings</mat-icon>
+              Administrator
+            </div>
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item class="menu-item">
+          <mat-icon>person</mat-icon>
+          <span>Profile</span>
+        </button>
+        <button mat-menu-item class="menu-item">
+          <mat-icon>security</mat-icon>
+          <span>Security</span>
+        </button>
+        <button mat-menu-item class="menu-item">
+          <mat-icon>notifications</mat-icon>
+          <span>Notifications</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()" class="menu-item logout-item">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </nav>
+
+    <!-- Public Navigation (when not admin) -->
+    <nav class="nav-section" *ngIf="!isAdmin">
+      <a routerLink="/" mat-button class="nav-link">
+        <mat-icon>home</mat-icon>
+        <span>Home</span>
+      </a>
+      <a routerLink="/login" mat-raised-button color="primary" *ngIf="!isAuthenticated">
+        <mat-icon>login</mat-icon>
+        <span>Login</span>
+      </a>
+    </nav>
+  </div>
+</mat-toolbar>

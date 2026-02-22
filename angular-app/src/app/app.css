@@ -8,6 +8,7 @@
 /* Public Container - full width, no padding (for eCommerce landing page) */
 .container.public-container {
     padding: 0;
+    padding-top: 50px; /* Account for fixed header */
     max-width: none;
     margin: 0;
 }

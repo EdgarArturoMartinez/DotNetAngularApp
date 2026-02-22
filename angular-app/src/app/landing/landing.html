@@ -15,18 +15,44 @@
   <div *ngIf="!isLoading() && !error() && stats()" class="dashboard-content">
     <!-- Hero Section -->
     <section class="hero-section">
-      <div class="hero-content">
-        <div class="hero-text">
-          <h1 class="hero-title">Welcome to VegShop Admin</h1>
-          <p class="hero-subtitle">Manage your vegetarian products with ease</p>
-          <p class="hero-description">A modern, professional platform to manage and sell high-quality vegetarian products</p>
-          <a routerLink="/admin/products" mat-flat-button class="hero-button">
-            <mat-icon>shopping_bag</mat-icon>
-            Go to Products
-          </a>
-        </div>
-        <div class="hero-graphic">
-          <div class="graphic-element">🥕 🥦 🍅</div>
+      <div class="hero-background">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <span>Admin Dashboard</span>
+          </div>
+          
+          <h1 class="hero-title">
+            Welcome to <span class="brand-name">VeggyWorldShop Admin</span>
+          </h1>
+          
+          <p class="hero-subtitle">
+            Manage your inventory, products, and business operations with ease
+          </p>
+          
+          <div class="hero-stats">
+            <div class="stat-item">
+              <div class="stat-icon">📦</div>
+              <div class="stat-content">
+                <div class="stat-number">{{ stats()?.totalProducts }}</div>
+                <div class="stat-label">Products</div>
+              </div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon">📊</div>
+              <div class="stat-content">
+                <div class="stat-number">{{ stats()?.totalCategories }}</div>
+                <div class="stat-label">Categories</div>
+              </div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon">👥</div>
+              <div class="stat-content">
+                <div class="stat-number">{{ stats()?.totalUsers }}</div>
+                <div class="stat-label">Users</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -34,22 +60,37 @@
     <!-- Header Section -->
     <div class="dashboard-header">
       <div class="header-content">
-        <h1 class="dashboard-title">Admin Dashboard</h1>
-        <p class="dashboard-subtitle">Real-time inventory and sales insights</p>
+        <h1 class="dashboard-title">Real-time Insights</h1>
+        <p class="dashboard-subtitle">Monitor inventory and business performance</p>
       </div>
       <div class="header-actions">
-        <a routerLink="/admin/products" mat-raised-button color="primary">
-          <mat-icon>add_circle</mat-icon>
-          Add Product
-        </a>
-        <a routerLink="/admin/categories/create" mat-stroked-button color="primary">
-          <mat-icon>category</mat-icon>
-          Add Category
-        </a>
-        <a routerLink="/admin/weight-types/create" mat-stroked-button color="accent">
-          <mat-icon>straighten</mat-icon>
-          Add Weight Type
-        </a>
+        <button mat-raised-button color="primary" [matMenuTriggerFor]="manageMenu">
+          <mat-icon>admin_panel_settings</mat-icon>
+          Manage Entities
+          <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+        </button>
+        <mat-menu #manageMenu="matMenu" class="entity-menu">
+          <a mat-menu-item routerLink="/admin/products">
+            <mat-icon>inventory_2</mat-icon>
+            <span>Products</span>
+          </a>
+          <a mat-menu-item routerLink="/admin/categories">
+            <mat-icon>category</mat-icon>
+            <span>Categories</span>
+          </a>
+          <a mat-menu-item routerLink="/admin/weight-types">
+            <mat-icon>straighten</mat-icon>
+            <span>Weight Types</span>
+          </a>
+          <a mat-menu-item routerLink="/admin/users">
+            <mat-icon>people</mat-icon>
+            <span>Users</span>
+          </a>
+        </mat-menu>
+        <button mat-stroked-button color="primary" (click)="refreshDashboard()">
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
       </div>
     </div>
 
@@ -108,6 +149,40 @@
         <div class="card-body">
           <div class="metric-value" style="font-size: 28px;">{{ stats()?.totalInventoryValue | currency: 'COP' }}</div>
           <div class="metric-description">Total product value in stock</div>
+        </div>
+      </div>
+
+      <div class="metric-card metric-primary">
+        <div class="card-header">
+          <div class="metric-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+            <mat-icon>people</mat-icon>
+          </div>
+          <span class="metric-label">Users</span>
+        </div>
+        <div class="card-body">
+          <div class="metric-value">{{ stats()?.totalUsers }}</div>
+          <div class="metric-description">Registered users</div>
+          <a routerLink="/admin/users" class="metric-link">
+            <mat-icon>arrow_forward</mat-icon>
+            Manage Users
+          </a>
+        </div>
+      </div>
+
+      <div class="metric-card metric-primary">
+        <div class="card-header">
+          <div class="metric-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+            <mat-icon>straighten</mat-icon>
+          </div>
+          <span class="metric-label">Weight Types</span>
+        </div>
+        <div class="card-body">
+          <div class="metric-value">{{ stats()?.totalWeightTypes }}</div>
+          <div class="metric-description">Measurement units</div>
+          <a routerLink="/admin/weight-types" class="metric-link">
+            <mat-icon>arrow_forward</mat-icon>
+            Manage Weight Types
+          </a>
         </div>
       </div>
     </section>
@@ -220,15 +295,45 @@
     <section class="quick-actions-section">
       <h3 class="section-title">Quick Actions</h3>
       <div class="action-buttons">
-        <a routerLink="/admin/products" mat-raised-button color="primary" class="action-btn">
-          <mat-icon>list</mat-icon>
-          View All Products
-        </a>
-        <a routerLink="/admin/weight-types" mat-raised-button color="accent" class="action-btn">
-          <mat-icon>straighten</mat-icon>
-          Manage Weight Types
-        </a>
-        <button mat-raised-button class="action-btn refresh-btn" (click)="refreshDashboard()">
+        <button mat-raised-button color="primary" [matMenuTriggerFor]="quickActionsMenu" class="action-btn">
+          <mat-icon>apps</mat-icon>
+          Navigate To
+          <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+        </button>
+        <mat-menu #quickActionsMenu="matMenu" class="entity-menu">
+          <div class="menu-section-header">View & Manage</div>
+          <a mat-menu-item routerLink="/admin/products">
+            <mat-icon>inventory_2</mat-icon>
+            <span>Products</span>
+          </a>
+          <a mat-menu-item routerLink="/admin/categories">
+            <mat-icon>category</mat-icon>
+            <span>Categories</span>
+          </a>
+          <a mat-menu-item routerLink="/admin/weight-types">
+            <mat-icon>straighten</mat-icon>
+            <span>Weight Types</span>
+          </a>
+          <a mat-menu-item routerLink="/admin/users">
+            <mat-icon>people</mat-icon>
+            <span>Users</span>
+          </a>
+          <mat-divider></mat-divider>
+          <div class="menu-section-header">Create New</div>
+          <a mat-menu-item routerLink="/admin/products/create">
+            <mat-icon>add_circle</mat-icon>
+            <span>New Product</span>
+          </a>
+          <a mat-menu-item routerLink="/admin/categories/create">
+            <mat-icon>create_new_folder</mat-icon>
+            <span>New Category</span>
+          </a>
+          <a mat-menu-item routerLink="/admin/weight-types/create">
+            <mat-icon>add</mat-icon>
+            <span>New Weight Type</span>
+          </a>
+        </mat-menu>
+        <button mat-raised-button color="accent" class="action-btn refresh-btn" (click)="refreshDashboard()">
           <mat-icon>refresh</mat-icon>
           Refresh Data
         </button>

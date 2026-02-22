@@ -1,3 +1,6 @@
+<!-- Public Header (shown on non-admin routes) -->
+<app-header *ngIf="!isAdminRoute()"></app-header>
+
 <!-- Admin Navigation Menu (only shown on admin routes) -->
 <app-menu *ngIf="isAdminRoute()"></app-menu>
 

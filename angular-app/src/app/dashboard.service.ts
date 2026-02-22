@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Vegproduct } from './vegproduct';
 import { VegCategoryService } from './vegcategory.service';
+import { CustomerService } from './core/services/customer.service';
+import { VegTypeWeightService } from './shared/services/veg-type-weight.service';
 import { Observable, forkJoin, map } from 'rxjs';
 
 export interface DashboardStats {
@@ -8,6 +10,8 @@ export interface DashboardStats {
   totalProducts: number;
   totalStockQuantity: number;
   totalInventoryValue: number;
+  totalUsers: number;
+  totalWeightTypes: number;
   categoryBreakdown: CategoryStat[];
   topProducts: ProductStat[];
   lowStockProducts: ProductStat[];
@@ -34,6 +38,8 @@ export interface ProductStat {
 export class DashboardService {
   private vegProductService = inject(Vegproduct);
   private vegCategoryService = inject(VegCategoryService);
+  private customerService = inject(CustomerService);
+  private vegTypeWeightService = inject(VegTypeWeightService);
 
   /**
    * Get comprehensive dashboard statistics
@@ -42,12 +48,16 @@ export class DashboardService {
   getDashboardStats(): Observable<DashboardStats> {
     return forkJoin({
       products: this.vegProductService.getVegproducts(),
-      categories: this.vegCategoryService.getVegcategories()
+      categories: this.vegCategoryService.getVegcategories(),
+      users: this.customerService.getAllCustomers(),
+      weightTypes: this.vegTypeWeightService.getAll()
     }).pipe(
-      map(({ products, categories }) => {
+      map(({ products, categories, users, weightTypes }) => {
         // Ensure products is an array
         const productList = Array.isArray(products) ? products : [];
         const categoryList = Array.isArray(categories) ? categories : [];
+        const userList = Array.isArray(users) ? users : [];
+        const weightTypeList = Array.isArray(weightTypes) ? weightTypes : [];
 
         // Calculate totals
         const totalCategories = categoryList.length;
@@ -109,6 +119,8 @@ export class DashboardService {
           totalProducts,
           totalStockQuantity,
           totalInventoryValue,
+          totalUsers: userList.length,
+          totalWeightTypes: weightTypeList.length,
           categoryBreakdown: Array.from(categoryMap.values()),
           topProducts,
           lowStockProducts

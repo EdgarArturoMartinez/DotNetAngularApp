@@ -12,6 +12,7 @@ namespace DotNetCoreWebApi.Application.DBContext
         public DbSet<Entities.VegCategory> VegCategories { get; set; }
         public DbSet<Entities.ProductImage> ProductImages { get; set; }
         public DbSet<Entities.VegTypeWeight> VegTypeWeights { get; set; }
+        public DbSet<Entities.Customer> Customers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -62,6 +63,33 @@ namespace DotNetCoreWebApi.Application.DBContext
 
             modelBuilder.Entity<Entities.ProductImage>()
                 .Property(pi => pi.UploadedDate)
+                .HasDefaultValueSql("GETUTCDATE()");
+
+            // Configure Customer entity
+            modelBuilder.Entity<Entities.Customer>()
+                .HasKey(c => c.Id);
+
+            modelBuilder.Entity<Entities.Customer>()
+                .HasIndex(c => c.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<Entities.Customer>()
+                .Property(c => c.Email)
+                .HasMaxLength(255)
+                .IsRequired();
+
+            modelBuilder.Entity<Entities.Customer>()
+                .Property(c => c.FirstName)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            modelBuilder.Entity<Entities.Customer>()
+                .Property(c => c.LastName)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            modelBuilder.Entity<Entities.Customer>()
+                .Property(c => c.CreatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");
 
             // Seed initial VegTypeWeight data

@@ -38,7 +38,7 @@
 }
 
 .search-field ::ng-deep .mat-form-field-focus-overlay {
-  background-color: rgba(76, 175, 80, 0.03);
+  background-color: rgba(102, 126, 234, 0.03);
 }
 
 .controls-section {
@@ -49,13 +49,13 @@
 
 .view-toggle-btn,
 .reload-btn {
-  color: #4caf50 !important;
+  color: #667eea !important;
   transition: all 0.3s ease;
 }
 
 .view-toggle-btn:hover,
 .reload-btn:hover {
-  background-color: rgba(76, 175, 80, 0.1);
+  background-color: rgba(102, 126, 234, 0.1);
 }
 
 .reload-btn:active {
@@ -411,7 +411,7 @@
 .data-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-  border-color: #4caf50;
+  border-color: #667eea;
 }
 
 .card-header {

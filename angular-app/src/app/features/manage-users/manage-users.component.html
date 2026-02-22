@@ -1,0 +1,244 @@
+<div class="manage-users-container">
+  <div class="header">
+    <h1>Manage Users</h1>
+    <button class="btn btn-primary" (click)="showCreateForm()" *ngIf="!showForm">
+      + Create New User
+    </button>
+  </div>
+
+  <!-- Success/Error Messages -->
+  <div class="alert alert-success" *ngIf="successMessage && !showForm">
+    {{ successMessage }}
+  </div>
+  <div class="alert alert-error" *ngIf="errorMessage && !showForm">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Create/Edit Form -->
+  <div class="form-container" *ngIf="showForm">
+    <h2>{{ isEditMode ? 'Edit User' : 'Create New User' }}</h2>
+    
+    <form [formGroup]="customerForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email"
+            class="form-control"
+            [class.error]="email?.invalid && email?.touched"
+            placeholder="user@example.com"
+          />
+          <div class="error-message" *ngIf="email?.invalid && email?.touched">
+            <span *ngIf="email?.errors?.['required']">Email is required</span>
+            <span *ngIf="email?.errors?.['email']">Please enter a valid email</span>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="!isEditMode">
+          <label for="password">Password *</label>
+          <input 
+            type="password" 
+            id="password" 
+            formControlName="password"
+            class="form-control"
+            [class.error]="password?.invalid && password?.touched"
+            placeholder="Min. 8 characters"
+          />
+          <div class="error-message" *ngIf="password?.invalid && password?.touched">
+            <span *ngIf="password?.errors?.['required']">Password is required</span>
+            <span *ngIf="password?.errors?.['minlength']">Password must be at least 8 characters</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">First Name *</label>
+          <input 
+            type="text" 
+            id="firstName" 
+            formControlName="firstName"
+            class="form-control"
+            [class.error]="firstName?.invalid && firstName?.touched"
+            placeholder="John"
+          />
+          <div class="error-message" *ngIf="firstName?.invalid && firstName?.touched">
+            <span *ngIf="firstName?.errors?.['required']">First name is required</span>
+            <span *ngIf="firstName?.errors?.['minlength']">Minimum 2 characters</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name *</label>
+          <input 
+            type="text" 
+            id="lastName" 
+            formControlName="lastName"
+            class="form-control"
+            [class.error]="lastName?.invalid && lastName?.touched"
+            placeholder="Doe"
+          />
+          <div class="error-message" *ngIf="lastName?.invalid && lastName?.touched">
+            <span *ngIf="lastName?.errors?.['required']">Last name is required</span>
+            <span *ngIf="lastName?.errors?.['minlength']">Minimum 2 characters</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="phoneNumber">Phone Number</label>
+          <input 
+            type="tel" 
+            id="phoneNumber" 
+            formControlName="phoneNumber"
+            class="form-control"
+            placeholder="+1234567890 (optional)"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="role">Role *</label>
+          <select 
+            id="role" 
+            formControlName="role"
+            class="form-control"
+          >
+            <option [value]="UserRole.Customer">Customer</option>
+            <option [value]="UserRole.Admin">Admin</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input 
+            type="checkbox" 
+            formControlName="isActive"
+          />
+          <span>Active</span>
+        </label>
+      </div>
+
+      <!-- Form Messages -->
+      <div class="alert alert-success" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+      <div class="alert alert-error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="isLoading || customerForm.invalid"
+        >
+          <span *ngIf="!isLoading">{{ isEditMode ? 'Update User' : 'Create User' }}</span>
+          <span *ngIf="isLoading">{{ isEditMode ? 'Updating...' : 'Creating...' }}</span>
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-secondary"
+          (click)="hideForm()"
+          [disabled]="isLoading"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters" *ngIf="!showForm">
+    <div class="filter-group">
+      <label>Filter by Role:</label>
+      <div class="filter-buttons">
+        <button 
+          class="filter-btn" 
+          [class.active]="filterRole === 'all'"
+          (click)="onFilterRoleChange('all')"
+        >
+          All
+        </button>
+        <button 
+          class="filter-btn" 
+          [class.active]="filterRole === UserRole.Customer"
+          (click)="onFilterRoleChange(UserRole.Customer)"
+        >
+          Customers
+        </button>
+        <button 
+          class="filter-btn" 
+          [class.active]="filterRole === UserRole.Admin"
+          (click)="onFilterRoleChange(UserRole.Admin)"
+        >
+          Admins
+        </button>
+      </div>
+    </div>
+
+    <div class="search-group">
+      <input 
+        type="text" 
+        placeholder="Search by name or email..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+        class="search-input"
+      />
+    </div>
+  </div>
+
+  <!-- Users Table -->
+  <div class="table-container" *ngIf="!showForm">
+    <div class="loading" *ngIf="isLoading">Loading...</div>
+    
+    <table class="users-table" *ngIf="!isLoading">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let customer of filteredCustomers">
+          <td>{{ customer.id }}</td>
+          <td>{{ customer.firstName }} {{ customer.lastName }}</td>
+          <td>{{ customer.email }}</td>
+          <td>{{ customer.phoneNumber || '-' }}</td>
+          <td>
+            <span class="badge" [class.badge-admin]="customer.role === UserRole.Admin">
+              {{ getRoleName(customer.role) }}
+            </span>
+          </td>
+          <td>
+            <span class="status" [class.active]="customer.isActive" [class.inactive]="!customer.isActive">
+              {{ customer.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td>
+            <div class="actions">
+              <button class="btn-icon btn-edit" (click)="showEditForm(customer)" title="Edit">
+                ✏️
+              </button>
+              <button class="btn-icon btn-delete" (click)="deleteCustomer(customer)" title="Delete">
+                🗑️
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="filteredCustomers.length === 0">
+          <td colspan="7" class="no-data">No users found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

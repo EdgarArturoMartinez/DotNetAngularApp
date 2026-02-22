@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, ViewChild, ElementRef, computed } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, ViewChild, ElementRef, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -11,8 +11,11 @@ import { VegCategoryService } from '../vegcategory.service';
 import { Vegproduct, VegProduct } from '../vegproduct';
 import { VegCategory } from '../vegcategory';
 import { ProductImageService } from '../shared/services/product-image.service';
+import { AuthService } from '../core/services/auth.service';
+import { SearchService } from '../core/services/search.service';
+import { UserRole } from '../core/models/auth.models';
 import { environment } from '../../environments/environment';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin, of, Subscription } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 /**
@@ -42,10 +45,15 @@ import { catchError, map } from 'rxjs/operators';
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   private categoryService = inject(VegCategoryService);
   private productService = inject(Vegproduct);
   private imageService = inject(ProductImageService);
+  private authService = inject(AuthService);
+  private searchService = inject(SearchService);
+
+  // Subscriptions for cleanup
+  private subscriptions = new Subscription();
 
   // Signal-based state management
   categories = signal<VegCategory[]>([]);
@@ -55,13 +63,14 @@ export class HomeComponent implements OnInit {
   isLoading = signal(true);
   error = signal<string | null>(null);
   
-  // Search functionality
-  searchText = signal<string>('');
-  isSearchFocused = signal<boolean>(false);
+  // Authentication state
+  isAuthenticated = false;
+  isAdmin = false;
+  UserRole = UserRole;
   
-  // Computed filtered products
+  // Computed filtered products using SearchService
   filteredProducts = computed(() => {
-    const search = this.searchText().toLowerCase().trim();
+    const search = this.searchService.searchText().toLowerCase().trim();
     const products = this.allProducts();
     
     if (!search) {
@@ -74,14 +83,49 @@ export class HomeComponent implements OnInit {
     );
   });
 
-  // Placeholder image for products without a main image (using data URL for emoji-based hero design)
-  readonly PLACEHOLDER_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM2NjdlZWE7c3RvcC1vcGFjaXR5OjEiLz48c3RvcCBvZmZzZXQ9IjUwJSIgc3R5bGU9InN0b3AtY29sb3I6Izc2NGJhMjtzdG9wLW9wYWNpdHk6MSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2YwOTNmYjtzdG9wLW9wYWNpdHk6MSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMjQwIiBmaWxsPSJ1cmwoI2cpIi8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtc2l6ZT0iNjQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPvCfpafwn6WWIPCfpZo8L3RleHQ+PHRleHQgeD0iNTAlIiB5PSI3MCUiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgb3BhY2l0eT0iMC45Ij5GcmVzaCBWZWdldGFibGVzPC90ZXh0Pjwvc3ZnPg==';
+  // Expose searchText from SearchService for template access
+  get searchText() {
+    return this.searchService.searchText;
+  }
+
+  // Placeholder image for products without a main image (using data URL for emoji-based hero design with green organic palette)
+  readonly PLACEHOLDER_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM0Q0FGNTA7c3RvcC1vcGFjaXR5OjEiLz48c3RvcCBvZmZzZXQ9IjUwJSIgc3R5bGU9InN0b3AtY29sb3I6IzJFN0QzMjtzdG9wLW9wYWNpdHk6MSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzgxQzc4NDtzdG9wLW9wYWNpdHk6MSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMjQwIiBmaWxsPSJ1cmwoI2cpIi8+PHRleHQgeD0iNTAlIiB5PSI0NSUiIGZvbnQtc2l6ZT0iNjQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPvCfpafwn6WWIPCfpZo8L3RleHQ+PHRleHQgeD0iNTAlIiB5PSI3MCUiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgb3BhY2l0eT0iMC45Ij5GcmVzaCBWZWdldGFibGVzPC90ZXh0Pjwvc3ZnPg==';
 
   @ViewChild('categoriesCarousel') categoriesCarousel!: ElementRef;
   @ViewChild('featuresCarousel') featuresCarousel!: ElementRef;
 
   ngOnInit(): void {
     this.loadData();
+    
+    // Subscribe to auth state changes
+    this.authService.currentUser$.subscribe(user => {
+      this.isAuthenticated = !!user;
+      this.isAdmin = user?.role === UserRole.Admin;
+    });
+
+    // Subscribe to search focus - scroll to products when user focuses search
+    this.subscriptions.add(
+      this.searchService.searchFocused$.subscribe(() => {
+        setTimeout(() => {
+          this.scrollToSection('products');
+        }, 100);
+      })
+    );
+
+    // Subscribe to search changes - scroll to products when user types
+    this.subscriptions.add(
+      this.searchService.searchChanged$.subscribe((value) => {
+        if (value.trim()) {
+          setTimeout(() => {
+            this.scrollToSection('products');
+          }, 50);
+        }
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   /**
@@ -192,51 +236,6 @@ export class HomeComponent implements OnInit {
   }
 
   /**
-   * Handle search input focus
-   */
-  onSearchFocus(): void {
-    this.isSearchFocused.set(true);
-    // Scroll to products section smoothly
-    setTimeout(() => {
-      this.scrollToSection('products');
-    }, 100);
-  }
-
-  /**
-   * Handle search input blur
-   */
-  onSearchBlur(): void {
-    // Delay to allow click events on clear button and products
-    setTimeout(() => {
-      // Only hide if there's no search text
-      if (!this.searchText()) {
-        this.isSearchFocused.set(false);
-      }
-    }, 200);
-  }
-
-  /**
-   * Handle search text change
-   */
-  onSearchChange(value: string): void {
-    this.searchText.set(value);
-    // Scroll to products when user starts typing
-    if (value.trim()) {
-      setTimeout(() => {
-        this.scrollToSection('products');
-      }, 50);
-    }
-  }
-
-  /**
-   * Clear search
-   */
-  clearSearch(): void {
-    this.searchText.set('');
-    this.isSearchFocused.set(false);
-  }
-
-  /**
    * Load main images for products
    */
   private loadProductImages(products: VegProduct[]): void {
@@ -306,5 +305,12 @@ export class HomeComponent implements OnInit {
     }
     
     return displayName;
+  }
+
+  /**
+   * Clear search - delegates to SearchService
+   */
+  clearSearch(): void {
+    this.searchService.clearSearch();
   }
 }

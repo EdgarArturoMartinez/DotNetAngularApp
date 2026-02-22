@@ -75,7 +75,7 @@ mat-form-field {
 }
 
 ::ng-deep .mat-mdc-form-field-hint {
-  color: #4caf50 !important;
+  color: #667eea !important;
   font-weight: 500;
   font-size: 12px !important;
   margin-top: 4px;
@@ -86,7 +86,7 @@ mat-form-field {
 }
 
 mat-icon[matSuffix] {
-  color: #4caf50;
+  color: #667eea;
   font-size: 20px;
   width: 20px;
   height: 20px;
@@ -100,7 +100,7 @@ mat-icon[matSuffix] {
 }
 
 .submit-btn {
-  background-color: #4caf50 !important;
+  background-color: #667eea !important;
   color: white !important;
   padding: 12px 32px !important;
   font-size: 16px !important;
@@ -112,9 +112,9 @@ mat-icon[matSuffix] {
 }
 
 .submit-btn:hover {
-  background-color: #45a049 !important;
+  background-color: #5568d3 !important;
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(76, 175, 80, 0.3) !important;
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3) !important;
 }
 
 .cancel-btn {
@@ -209,7 +209,7 @@ mat-icon[matSuffix] {
 
 /* Snackbar Notifications */
 ::ng-deep .success-snackbar {
-  background-color: #4caf50 !important;
+  background-color: #667eea !important;
   color: white !important;
 }
 

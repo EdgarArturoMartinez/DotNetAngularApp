@@ -61,7 +61,7 @@ namespace DotNetCoreWebApi.Migrations
 
                     b.HasIndex("IdProduct");
 
-                    b.ToTable("ProductImages");
+                    b.ToTable("ProductImages", (string)null);
                 });
 
             modelBuilder.Entity("DotNetCoreWebApi.Application.Entities.VegCategory", b =>
@@ -84,7 +84,7 @@ namespace DotNetCoreWebApi.Migrations
 
                     b.HasKey("IdCategory");
 
-                    b.ToTable("VegCategories");
+                    b.ToTable("VegCategories", (string)null);
                 });
 
             modelBuilder.Entity("DotNetCoreWebApi.Application.Entities.VegProducts", b =>
@@ -118,7 +118,7 @@ namespace DotNetCoreWebApi.Migrations
 
                     b.HasIndex("IdCategory");
 
-                    b.ToTable("VegProducts");
+                    b.ToTable("VegProducts", (string)null);
                 });
 
             modelBuilder.Entity("DotNetCoreWebApi.Application.Entities.ProductImage", b =>

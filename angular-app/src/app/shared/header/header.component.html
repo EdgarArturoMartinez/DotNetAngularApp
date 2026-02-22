@@ -1,0 +1,59 @@
+<header class="header">
+  <nav class="nav-container">
+    <!-- Logo -->
+    <div class="logo">
+      <a routerLink="/">🥬 VeggyWorldShop</a>
+    </div>
+
+    <!-- Navigation Links -->
+    <ul class="nav-links">
+      <li>
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          Home
+        </a>
+      </li>
+      
+      <!-- Show different links based on authentication and role -->
+      <ng-container *ngIf="isAuthenticated && isAdmin">
+        <li>
+          <a routerLink="/admin" routerLinkActive="active">
+            Admin Panel
+          </a>
+        </li>
+        <li>
+          <a routerLink="/admin/products" routerLinkActive="active">
+            Products
+          </a>
+        </li>
+        <li>
+          <a routerLink="/admin/categories" routerLinkActive="active">
+            Categories
+          </a>
+        </li>
+      </ng-container>
+    </ul>
+
+    <!-- Auth Section -->
+    <div class="auth-section">
+      <ng-container *ngIf="!isAuthenticated">
+        <!-- Not logged in -->
+        <a routerLink="/login" class="btn btn-outline">Login</a>
+        <a routerLink="/register" class="btn btn-primary">Register</a>
+      </ng-container>
+
+      <ng-container *ngIf="isAuthenticated && currentUser">
+        <!-- Logged in -->
+        <div class="user-menu">
+          <div class="user-info">
+            <div class="user-avatar">{{ getInitials() }}</div>
+            <div class="user-details">
+              <span class="user-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</span>
+              <span class="user-role">{{ currentUser.role === UserRole.Admin ? 'Admin' : 'Customer' }}</span>
+            </div>
+          </div>
+          <button class="btn btn-logout" (click)="logout()">Logout</button>
+        </div>
+      </ng-container>
+    </div>
+  </nav>
+</header>

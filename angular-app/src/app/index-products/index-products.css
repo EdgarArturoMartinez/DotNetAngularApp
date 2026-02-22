@@ -39,7 +39,7 @@
 }
 
 .create-button {
-  background-color: #4caf50 !important;
+  background-color: #667eea !important;
   color: white !important;
   padding: 12px 24px !important;
   font-size: 16px !important;
@@ -50,9 +50,22 @@
 }
 
 .create-button:hover {
-  background-color: #45a049 !important;
+  background-color: #5568d3 !important;
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(76, 175, 80, 0.3) !important;
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3) !important;
+}
+
+/* Override Material Design button colors */
+.create-button.mat-mdc-raised-button,
+.create-button.mat-mdc-unelevated-button,
+.create-button.mat-flat-button {
+  background-color: #667eea !important;
+}
+
+.create-button.mat-mdc-raised-button:hover,
+.create-button.mat-mdc-unelevated-button:hover,
+.create-button.mat-flat-button:hover {
+  background-color: #5568d3 !important;
 }
 
 /* Products Container */
@@ -158,6 +171,19 @@
 }
 
 .empty-button:hover {
+  background-color: #5568d3 !important;
+}
+
+/* Override Material Design button colors */
+.empty-button.mat-mdc-raised-button,
+.empty-button.mat-mdc-unelevated-button,
+.empty-button.mat-flat-button {
+  background-color: #667eea !important;
+}
+
+.empty-button.mat-mdc-raised-button:hover,
+.empty-button.mat-mdc-unelevated-button:hover,
+.empty-button.mat-flat-button:hover {
   background-color: #5568d3 !important;
 }
 

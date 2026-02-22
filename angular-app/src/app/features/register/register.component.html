@@ -1,0 +1,156 @@
+<div class="register-container">
+  <div class="register-card">
+    <h2>Create Your Account</h2>
+    
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email">Email Address *</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email"
+          class="form-control"
+          [class.error]="email?.invalid && email?.touched"
+          placeholder="Enter your email"
+        />
+        <div class="error-message" *ngIf="email?.invalid && email?.touched">
+          <span *ngIf="email?.errors?.['required']">Email is required</span>
+          <span *ngIf="email?.errors?.['email']">Please enter a valid email</span>
+          <span *ngIf="email?.errors?.['emailTaken']">This email is already registered</span>
+        </div>
+      </div>
+
+      <!-- First Name Field -->
+      <div class="form-group">
+        <label for="firstName">First Name *</label>
+        <input 
+          type="text" 
+          id="firstName" 
+          formControlName="firstName"
+          class="form-control"
+          [class.error]="firstName?.invalid && firstName?.touched"
+          placeholder="Enter your first name"
+        />
+        <div class="error-message" *ngIf="firstName?.invalid && firstName?.touched">
+          <span *ngIf="firstName?.errors?.['required']">First name is required</span>
+          <span *ngIf="firstName?.errors?.['minlength']">First name must be at least 2 characters</span>
+        </div>
+      </div>
+
+      <!-- Last Name Field -->
+      <div class="form-group">
+        <label for="lastName">Last Name *</label>
+        <input 
+          type="text" 
+          id="lastName" 
+          formControlName="lastName"
+          class="form-control"
+          [class.error]="lastName?.invalid && lastName?.touched"
+          placeholder="Enter your last name"
+        />
+        <div class="error-message" *ngIf="lastName?.invalid && lastName?.touched">
+          <span *ngIf="lastName?.errors?.['required']">Last name is required</span>
+          <span *ngIf="lastName?.errors?.['minlength']">Last name must be at least 2 characters</span>
+        </div>
+      </div>
+
+      <!-- Phone Number Field -->
+      <div class="form-group">
+        <label for="phoneNumber">Phone Number</label>
+        <input 
+          type="tel" 
+          id="phoneNumber" 
+          formControlName="phoneNumber"
+          class="form-control"
+          [class.error]="phoneNumber?.invalid && phoneNumber?.touched"
+          placeholder="Enter your phone number (optional)"
+        />
+        <div class="error-message" *ngIf="phoneNumber?.invalid && phoneNumber?.touched">
+          <span *ngIf="phoneNumber?.errors?.['pattern']">Please enter a valid phone number</span>
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password *</label>
+        <div class="password-input-wrapper">
+          <input 
+            [type]="showPassword ? 'text' : 'password'" 
+            id="password" 
+            formControlName="password"
+            class="form-control"
+            [class.error]="password?.invalid && password?.touched"
+            placeholder="Enter your password"
+          />
+          <button 
+            type="button" 
+            class="toggle-password-btn"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+          >
+            {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        <div class="password-hint">
+          Must be 8+ characters with uppercase, lowercase, number, and special character (@$!%*?&)
+        </div>
+        <div class="error-message" *ngIf="password?.invalid && password?.touched">
+          <span *ngIf="password?.errors?.['required']">Password is required</span>
+          <span *ngIf="password?.errors?.['minlength']">Password must be at least 8 characters</span>
+          <span *ngIf="password?.errors?.['pattern']">Password must contain uppercase, lowercase, number, and special character (@$!%*?&)</span>
+        </div>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password *</label>
+        <div class="password-input-wrapper">
+          <input 
+            [type]="showConfirmPassword ? 'text' : 'password'" 
+            id="confirmPassword" 
+            formControlName="confirmPassword"
+            class="form-control"
+            [class.error]="(confirmPassword?.invalid && confirmPassword?.touched) || registerForm.errors?.['passwordMismatch']"
+            placeholder="Confirm your password"
+          />
+          <button 
+            type="button" 
+            class="toggle-password-btn"
+            (click)="toggleConfirmPasswordVisibility()"
+            [attr.aria-label]="showConfirmPassword ? 'Hide password' : 'Show password'"
+          >
+            {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        <div class="error-message" *ngIf="confirmPassword?.touched">
+          <span *ngIf="confirmPassword?.errors?.['required']">Please confirm your password</span>
+          <span *ngIf="registerForm.errors?.['passwordMismatch'] && !confirmPassword?.errors?.['required']">
+            Passwords do not match
+          </span>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div class="alert alert-error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Submit Button -->
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="isLoading || registerForm.invalid"
+      >
+        <span *ngIf="!isLoading">Register</span>
+        <span *ngIf="isLoading">Creating account...</span>
+      </button>
+
+      <!-- Login Link -->
+      <div class="register-footer">
+        Already have an account? 
+        <a routerLink="/login" class="login-link">Login here</a>
+      </div>
+    </form>
+  </div>
+</div>

@@ -7,6 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
 import { RouterLink } from '@angular/router';
 import { DashboardService, DashboardStats } from '../dashboard.service';
 
@@ -23,6 +24,7 @@ import { DashboardService, DashboardStats } from '../dashboard.service';
     MatDividerModule,
     MatTabsModule,
     MatListModule,
+    MatMenuModule,
     RouterLink
   ],
   templateUrl: './landing.html',

@@ -2,12 +2,13 @@ import { Component, inject, signal } from '@angular/core';
 import { Weatherforecast } from './weatherforecast';
 import { CommonModule } from '@angular/common';
 import { Menu } from './menu/menu';
+import { HeaderComponent } from './shared/header/header.component';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, Menu, RouterOutlet],
+  imports: [CommonModule, Menu, HeaderComponent, RouterOutlet],
   templateUrl: './app.html',
   styleUrls: ['./app.css']    
 })
