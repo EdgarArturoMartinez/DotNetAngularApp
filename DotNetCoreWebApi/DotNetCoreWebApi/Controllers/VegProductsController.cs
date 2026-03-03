@@ -12,10 +12,12 @@ namespace DotNetCoreWebApi.Controllers;
 public class VegProductsController : ControllerBase
 {
     private readonly IVegProductService _productService;
+    private readonly ILogger<VegProductsController> _logger;
 
-    public VegProductsController(IVegProductService productService)
+    public VegProductsController(IVegProductService productService, ILogger<VegProductsController> logger)
     {
         _productService = productService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -24,8 +26,17 @@ public class VegProductsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<VegProductDto>>> GetAllProducts()
     {
-        var products = await _productService.GetAllProductsAsync();
-        return Ok(products);
+        try
+        {
+            var products = await _productService.GetAllProductsAsync();
+            _logger.LogDebug("Retrieved {Count} products", products.Count());
+            return Ok(products);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving all products");
+            return StatusCode(500, new { message = "An error occurred retrieving products" });
+        }
     }
 
     /// <summary>
@@ -34,12 +45,23 @@ public class VegProductsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<VegProductDto>> GetProductById(int id)
     {
-        var product = await _productService.GetProductByIdAsync(id);
+        try
+        {
+            var product = await _productService.GetProductByIdAsync(id);
 
-        if (product == null)
-            return NotFound(new { message = $"Product with ID {id} not found" });
+            if (product == null)
+            {
+                _logger.LogWarning("Product not found: {ProductId}", id);
+                return NotFound(new { message = $"Product with ID {id} not found" });
+            }
 
-        return Ok(product);
+            return Ok(product);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving product {ProductId}", id);
+            return StatusCode(500, new { message = "An error occurred retrieving the product" });
+        }
     }
 
     /// <summary>
@@ -54,8 +76,17 @@ public class VegProductsController : ControllerBase
         if (string.IsNullOrWhiteSpace(productDto.Name))
             return BadRequest(new { message = "Product name is required" });
 
-        var created = await _productService.CreateProductAsync(productDto);
-        return Ok(created);
+        try
+        {
+            var created = await _productService.CreateProductAsync(productDto);
+            _logger.LogInformation("Product created: {ProductName} (ID: {ProductId})", created.Name, created.Id);
+            return Ok(created);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating product {ProductName}", productDto.Name);
+            return StatusCode(500, new { message = "An error occurred creating the product" });
+        }
     }
 
     /// <summary>
@@ -73,11 +104,18 @@ public class VegProductsController : ControllerBase
         try
         {
             await _productService.UpdateProductAsync(id, productDto);
+            _logger.LogInformation("Product updated: {ProductId}", id);
             return NoContent();
         }
         catch (KeyNotFoundException ex)
         {
+            _logger.LogWarning("Update failed - product not found: {ProductId}", id);
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating product {ProductId}", id);
+            return StatusCode(500, new { message = "An error occurred updating the product" });
         }
     }
 
@@ -90,11 +128,18 @@ public class VegProductsController : ControllerBase
         try
         {
             await _productService.DeleteProductAsync(id);
+            _logger.LogInformation("Product deleted: {ProductId}", id);
             return NoContent();
         }
         catch (KeyNotFoundException ex)
         {
+            _logger.LogWarning("Delete failed - product not found: {ProductId}", id);
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting product {ProductId}", id);
+            return StatusCode(500, new { message = "An error occurred deleting the product" });
         }
     }
 
@@ -104,7 +149,16 @@ public class VegProductsController : ControllerBase
     [HttpGet("category/{categoryId}")]
     public async Task<ActionResult<IEnumerable<VegProductDto>>> GetProductsByCategory(int categoryId)
     {
-        var products = await _productService.GetProductsByCategoryAsync(categoryId);
-        return Ok(products);
+        try
+        {
+            var products = await _productService.GetProductsByCategoryAsync(categoryId);
+            _logger.LogDebug("Retrieved {Count} products for category {CategoryId}", products.Count(), categoryId);
+            return Ok(products);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving products for category {CategoryId}", categoryId);
+            return StatusCode(500, new { message = "An error occurred retrieving products" });
+        }
     }
 }

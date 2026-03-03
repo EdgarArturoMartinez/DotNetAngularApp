@@ -4,6 +4,7 @@ using DotNetCoreWebApi.DTOs;
 using DotNetCoreWebApi.Tests.Helpers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -15,12 +16,14 @@ namespace DotNetCoreWebApi.Tests.Unit.Controllers;
 public class VegTypeWeightsControllerTests
 {
     private readonly Mock<IVegTypeWeightService> _mockService;
+    private readonly Mock<ILogger<VegTypeWeightsController>> _mockLogger;
     private readonly VegTypeWeightsController _controller;
 
     public VegTypeWeightsControllerTests()
     {
         _mockService = new Mock<IVegTypeWeightService>();
-        _controller = new VegTypeWeightsController(_mockService.Object);
+        _mockLogger = new Mock<ILogger<VegTypeWeightsController>>();
+        _controller = new VegTypeWeightsController(_mockService.Object, _mockLogger.Object);
     }
 
     #region GetAllVegTypeWeights Tests

@@ -3,6 +3,7 @@ using DotNetCoreWebApi.Controllers;
 using DotNetCoreWebApi.DTOs;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace DotNetCoreWebApi.Tests.Unit.Controllers;
@@ -13,12 +14,14 @@ namespace DotNetCoreWebApi.Tests.Unit.Controllers;
 public class VegCategoriesControllerTests
 {
     private readonly Mock<IVegCategoryService> _mockService;
+    private readonly Mock<ILogger<VegCategoriesController>> _mockLogger;
     private readonly VegCategoriesController _controller;
 
     public VegCategoriesControllerTests()
     {
         _mockService = new Mock<IVegCategoryService>();
-        _controller = new VegCategoriesController(_mockService.Object);
+        _mockLogger = new Mock<ILogger<VegCategoriesController>>();
+        _controller = new VegCategoriesController(_mockService.Object, _mockLogger.Object);
     }
 
     #region GetCategories Tests

@@ -9,8 +9,44 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Events;
+
+// ─── Bootstrap Serilog early (before host build) ───────────────────────────
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .Enrich.WithEnvironmentName()
+    .Enrich.WithMachineName()
+    .Enrich.WithThreadId()
+    .WriteTo.Console(outputTemplate:
+        "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext}{NewLine}      {Message:lj}{NewLine}{Exception}")
+    .WriteTo.File(
+        path: "Logs/log-.txt",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 30,
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
+        shared: true)
+    .WriteTo.File(
+        path: "Logs/log-errors-.txt",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 90,
+        restrictedToMinimumLevel: LogEventLevel.Error,
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}",
+        shared: true)
+    .CreateLogger();
+
+try
+{
+    Log.Information("Starting Veggie World API");
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ─── Replace default logging with Serilog ──────────────────────────────────
+builder.Host.UseSerilog();
 
 // Add services to the container.
 
@@ -132,6 +168,32 @@ var app = builder.Build();
 // Seed database with initial admin user
 await DbSeeder.SeedAdminUser(app.Services, builder.Configuration);
 
+// ─── Serilog request logging (replaces default Microsoft request logs) ──────
+app.UseSerilogRequestLogging(options =>
+{
+    options.MessageTemplate =
+        "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms";
+    options.GetLevel = (httpContext, elapsed, ex) =>
+    {
+        if (ex != null) return LogEventLevel.Error;
+        if (httpContext.Response.StatusCode >= 500) return LogEventLevel.Error;
+        if (httpContext.Response.StatusCode >= 400) return LogEventLevel.Warning;
+        if (elapsed > 5000) return LogEventLevel.Warning;
+        return LogEventLevel.Information;
+    };
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
+        diagnosticContext.Set("UserAgent", httpContext.Request.Headers["User-Agent"].ToString());
+        diagnosticContext.Set("ClientIP", httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown");
+        
+        if (httpContext.User.Identity?.IsAuthenticated == true)
+        {
+            diagnosticContext.Set("UserName", httpContext.User.Identity.Name ?? "unknown");
+        }
+    };
+});
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -153,3 +215,12 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

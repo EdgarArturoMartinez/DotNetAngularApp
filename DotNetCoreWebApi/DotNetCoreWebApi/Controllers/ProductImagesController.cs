@@ -32,21 +32,19 @@ public class ProductImagesController : ControllerBase
     {
         try
         {
-            _logger.LogInformation($"Attempting to get images for product {productId}");
             var images = await _imageService.GetImagesByProductIdAsync(productId);
-            _logger.LogInformation($"Successfully retrieved {images.Count()} images for product {productId}");
+            _logger.LogDebug("Retrieved {Count} images for product {ProductId}", images.Count(), productId);
             return Ok(images);
         }
         catch (KeyNotFoundException ex)
         {
-            _logger.LogWarning($"Product not found: {productId} - {ex.Message}");
+            _logger.LogWarning("Product not found: {ProductId} - {Message}", productId, ex.Message);
             return NotFound(new { message = ex.Message });
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error loading images for product {productId}: {ex.GetType().Name}: {ex.Message}");
-            _logger.LogError($"Stack trace: {ex.StackTrace}");
-            return StatusCode(500, new { message = "Error loading product images", error = ex.Message, type = ex.GetType().Name });
+            _logger.LogError(ex, "Error loading images for product {ProductId}", productId);
+            return StatusCode(500, new { message = "Error loading product images" });
         }
     }
 
@@ -139,14 +137,17 @@ public class ProductImagesController : ControllerBase
         try
         {
             var createdImage = await _imageService.CreateImageAsync(productId, createDto);
+            _logger.LogInformation("Image created for product {ProductId}: {ImageId}", productId, createdImage.Id);
             return CreatedAtAction(nameof(GetImageById), new { productId, imageId = createdImage.Id }, createdImage);
         }
         catch (KeyNotFoundException ex)
         {
+            _logger.LogWarning("Create image failed - product not found: {ProductId}", productId);
             return NotFound(new { message = ex.Message });
         }
         catch (InvalidOperationException ex)
         {
+            _logger.LogWarning("Create image validation failed for product {ProductId}: {Message}", productId, ex.Message);
             return BadRequest(new { message = ex.Message });
         }
     }
@@ -163,14 +164,17 @@ public class ProductImagesController : ControllerBase
         try
         {
             var updatedImage = await _imageService.UpdateImageAsync(imageId, updateDto);
+            _logger.LogInformation("Image updated: {ImageId} for product {ProductId}", imageId, productId);
             return Ok(updatedImage);
         }
         catch (KeyNotFoundException ex)
         {
+            _logger.LogWarning("Update image failed - image not found: {ImageId}", imageId);
             return NotFound(new { message = ex.Message });
         }
         catch (InvalidOperationException ex)
         {
+            _logger.LogWarning("Update image validation failed for {ImageId}: {Message}", imageId, ex.Message);
             return BadRequest(new { message = ex.Message });
         }
     }
@@ -184,10 +188,12 @@ public class ProductImagesController : ControllerBase
         try
         {
             await _imageService.DeleteImageAsync(imageId);
+            _logger.LogInformation("Image deleted: {ImageId} from product {ProductId}", imageId, productId);
             return NoContent();
         }
         catch (KeyNotFoundException ex)
         {
+            _logger.LogWarning("Delete image failed - image not found: {ImageId}", imageId);
             return NotFound(new { message = ex.Message });
         }
     }
@@ -201,10 +207,12 @@ public class ProductImagesController : ControllerBase
         try
         {
             await _imageService.DeleteProductImagesAsync(productId);
+            _logger.LogInformation("All images deleted for product {ProductId}", productId);
             return NoContent();
         }
         catch (KeyNotFoundException ex)
         {
+            _logger.LogWarning("Delete all images failed - product not found: {ProductId}", productId);
             return NotFound(new { message = ex.Message });
         }
     }
@@ -277,7 +285,7 @@ public class ProductImagesController : ControllerBase
             // Create the database record
             var createdImage = await _imageService.CreateImageAsync(productId, imageDto);
 
-            _logger.LogInformation($"Image uploaded for product {productId}: {relativeImagePath}");
+            _logger.LogInformation("Image uploaded for product {ProductId}: {ImagePath}", productId, relativeImagePath);
             return CreatedAtAction(nameof(GetImageById), new { productId, imageId = createdImage.Id }, createdImage);
         }
         catch (ArgumentException ex)
@@ -290,7 +298,7 @@ public class ProductImagesController : ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            _logger.LogError(ex, $"Error uploading image for product {productId}");
+            _logger.LogError(ex, "Error uploading image for product {ProductId}", productId);
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Error saving image file" });
         }
     }

@@ -61,6 +61,7 @@ Frontend will run on: `http://localhost:4200` (or `http://localhost:4201` if por
 │   │   ├── edit-vegproduct/   # Edit product form (admin)
 │   │   ├── create-vegcategory/ # Create category form (admin)
 │   │   ├── edit-vegcategory/  # Edit category form (admin)
+│   │   ├── core/             # Core infrastructure (logging, interceptors, error handling)
 │   │   ├── features/          # Feature modules with services
 │   │   ├── shared/            # Shared models, services, and components
 │   │   │   ├── components/    # Reusable UI components
@@ -108,6 +109,7 @@ The application uses a clear separation between public and admin routes:
 ### Technologies
 - **.NET 8** - Backend API
 - **Entity Framework Core** - ORM
+- **Serilog** - Structured logging (Console + File sinks)
 - **Angular 19** - Frontend framework
 - **Angular Material** - UI components
 - **SQL Server** - Database
@@ -167,6 +169,7 @@ All documentation has been organized into the `/docs` folder for better project 
 - **[QUICK-START-DATA-TABLE.md](docs/architecture/QUICK-START-DATA-TABLE.md)** - Quick start for data tables
 - **[PRODUCT-IMAGES-ARCHITECTURE.md](docs/architecture/PRODUCT-IMAGES-ARCHITECTURE.md)** - Product image system architecture
 - **[FILE-UPLOAD-ARCHITECTURE.md](docs/architecture/FILE-UPLOAD-ARCHITECTURE.md)** - File upload system design
+- **[LOGGING-STRATEGY.md](docs/architecture/LOGGING-STRATEGY.md)** - Serilog logging strategy (backend + frontend)
 
 ### Implementation Guides (`docs/implementation-guides/`)
 - **[FRONTEND-IMPLEMENTATION-GUIDE.md](docs/implementation-guides/FRONTEND-IMPLEMENTATION-GUIDE.md)** - Frontend development guide
@@ -178,6 +181,7 @@ All documentation has been organized into the `/docs` folder for better project 
 - **[REFACTORING-SUMMARY.md](docs/completed-features/REFACTORING-SUMMARY.md)** - Clean architecture refactoring
 - **[FILE-UPLOAD-IMPLEMENTATION-COMPLETE.md](docs/completed-features/FILE-UPLOAD-IMPLEMENTATION-COMPLETE.md)** - File upload completion
 - **[VEGTYPEWEIGHT-IMPLEMENTATION-COMPLETE.md](docs/completed-features/VEGTYPEWEIGHT-IMPLEMENTATION-COMPLETE.md)** - VegTypeWeight feature
+- **[MODAL-NOTIFICATION-SYSTEM.md](docs/completed-features/MODAL-NOTIFICATION-SYSTEM.md)** - Shared modal & notification system
 
 ### Angular Documentation
 - **[angular-app/README.md](angular-app/README.md)** - Angular-specific documentation
@@ -230,6 +234,43 @@ dotnet ef database update
 - ✅ Loading states
 - ✅ Confirmation dialogs
 - ✅ Responsive UI
+- ✅ Structured logging with Serilog (backend) and LoggingService (frontend)
+- ✅ Global error handling
+- ✅ HTTP request/response logging
+
+---
+
+## 📊 Logging
+
+The application uses a production-grade structured logging strategy across the full stack.
+
+### Backend (Serilog)
+- **Sinks:** Console (coloured, structured) + Rolling File (daily rotation, 30-day retention)
+- **Error Log:** Separate error-only file with 90-day retention
+- **Enrichers:** Machine name, environment, thread ID
+- **Request Logging:** Every HTTP request logged with method, path, status, and elapsed time
+- **Diagnostic Context:** Client IP, User-Agent, authenticated user
+- **Structured Parameters:** All controllers use `{Placeholder}` syntax — no string interpolation
+- **Configuration:** Minimum levels set in `appsettings.json` with per-namespace overrides
+
+### Frontend (LoggingService)
+- **Centralized service** at `core/services/logging.service.ts` with `trace`, `debug`, `info`, `warn`, `error`, `fatal` methods
+- **Configurable** minimum level and console/remote toggles via `environment.ts`
+- **Batched forwarding** to backend `/api/clientlogs` endpoint (flush every 5s or at 25 entries)
+- **Global error handler** catches all unhandled exceptions
+- **HTTP interceptor** logs outgoing requests, responses, and errors with timing
+
+### Log Levels
+| Level | Backend | Frontend | Usage |
+|-------|---------|----------|-------|
+| Trace | Verbose | LogLevel.Trace | Detailed diagnostic data |
+| Debug | Debug | LogLevel.Debug | Development diagnostics |
+| Info | Information | LogLevel.Info | Normal operational events |
+| Warn | Warning | LogLevel.Warn | Unexpected but recoverable |
+| Error | Error | LogLevel.Error | Failures requiring attention |
+| Fatal | Fatal | LogLevel.Fatal | Application-stopping errors |
+
+**📍 Full details:** [LOGGING-STRATEGY.md](docs/architecture/LOGGING-STRATEGY.md)
 
 ---
 

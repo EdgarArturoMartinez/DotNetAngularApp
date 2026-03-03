@@ -12,10 +12,12 @@ namespace DotNetCoreWebApi.Controllers;
 public class VegCategoriesController : ControllerBase
 {
     private readonly IVegCategoryService _categoryService;
+    private readonly ILogger<VegCategoriesController> _logger;
 
-    public VegCategoriesController(IVegCategoryService categoryService)
+    public VegCategoriesController(IVegCategoryService categoryService, ILogger<VegCategoriesController> logger)
     {
         _categoryService = categoryService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -24,8 +26,17 @@ public class VegCategoriesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<VegCategoryDto>>> GetCategories()
     {
-        var categories = await _categoryService.GetAllCategoriesAsync();
-        return Ok(categories);
+        try
+        {
+            var categories = await _categoryService.GetAllCategoriesAsync();
+            _logger.LogDebug("Retrieved {Count} categories", categories.Count());
+            return Ok(categories);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving all categories");
+            return StatusCode(500, new { message = "An error occurred retrieving categories" });
+        }
     }
 
     /// <summary>
@@ -34,12 +45,23 @@ public class VegCategoriesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<VegCategoryDto>> GetCategoryById(int id)
     {
-        var category = await _categoryService.GetCategoryByIdAsync(id);
+        try
+        {
+            var category = await _categoryService.GetCategoryByIdAsync(id);
 
-        if (category == null)
-            return NotFound(new { message = $"Category with ID {id} not found" });
+            if (category == null)
+            {
+                _logger.LogWarning("Category not found: {CategoryId}", id);
+                return NotFound(new { message = $"Category with ID {id} not found" });
+            }
 
-        return Ok(category);
+            return Ok(category);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving category {CategoryId}", id);
+            return StatusCode(500, new { message = "An error occurred retrieving the category" });
+        }
     }
 
     /// <summary>
@@ -51,8 +73,17 @@ public class VegCategoriesController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var created = await _categoryService.CreateCategoryAsync(categoryDto);
-        return Ok(created);
+        try
+        {
+            var created = await _categoryService.CreateCategoryAsync(categoryDto);
+            _logger.LogInformation("Category created: {CategoryName} (ID: {CategoryId})", created.CategoryName, created.IdCategory);
+            return Ok(created);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating category {CategoryName}", categoryDto.CategoryName);
+            return StatusCode(500, new { message = "An error occurred creating the category" });
+        }
     }
 
     /// <summary>
@@ -67,11 +98,18 @@ public class VegCategoriesController : ControllerBase
         try
         {
             await _categoryService.UpdateCategoryAsync(id, categoryDto);
+            _logger.LogInformation("Category updated: {CategoryId}", id);
             return NoContent();
         }
         catch (KeyNotFoundException ex)
         {
+            _logger.LogWarning("Update failed - category not found: {CategoryId}", id);
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating category {CategoryId}", id);
+            return StatusCode(500, new { message = "An error occurred updating the category" });
         }
     }
 
@@ -84,11 +122,18 @@ public class VegCategoriesController : ControllerBase
         try
         {
             await _categoryService.DeleteCategoryAsync(id);
+            _logger.LogInformation("Category deleted: {CategoryId}", id);
             return NoContent();
         }
         catch (KeyNotFoundException ex)
         {
+            _logger.LogWarning("Delete failed - category not found: {CategoryId}", id);
             return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting category {CategoryId}", id);
+            return StatusCode(500, new { message = "An error occurred deleting the category" });
         }
     }
 }

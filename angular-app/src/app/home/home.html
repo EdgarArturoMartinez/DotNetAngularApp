@@ -121,10 +121,12 @@
           
           <h3 class="product-name">{{ getProductDisplayName(product) }}</h3>
           
-          <p class="product-description" *ngIf="product.description">
-            {{ product.description }}
-          </p>
-          <a class="read-more-link" *ngIf="product.description">Read more...</a>
+          <div class="product-description-wrapper" *ngIf="product.description">
+            <p class="product-description">
+              {{ product.description }}
+            </p>
+            <a class="read-more-link">Read more...</a>
+          </div>
           
           <div class="product-footer">
             <div class="product-price">
