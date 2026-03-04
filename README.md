@@ -68,7 +68,10 @@ Frontend will run on: `http://localhost:4200` (or `http://localhost:4201` if por
 │   │   │   │   └── generic-data-table/ # Reusable data table with dual views
 │   │   │   └── models/        # TypeScript interfaces
 │   │   └── [other components]
-└── ARCHITECTURE.md            # Complete architecture documentation with scenarios
+└── docs/                      # Project documentation
+    ├── architecture/          # Architecture guides and scenarios
+    ├── implementation-guides/ # Step-by-step implementation guides
+    └── completed-features/    # Completed feature summaries
 ```
 
 ### Routing Structure
@@ -119,7 +122,7 @@ The application uses a clear separation between public and admin routes:
 
 ## 🎯 Common Development Scenarios
 
-This project includes detailed step-by-step guides for common development tasks. See [ARCHITECTURE.md](ARCHITECTURE.md) for complete instructions:
+This project includes detailed step-by-step guides for common development tasks. See [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md) for complete instructions:
 
 ### Scenario 1: Adding a New Field to an Existing Table
 
@@ -133,7 +136,7 @@ This project includes detailed step-by-step guides for common development tasks.
 - Add form fields to create/edit components
 - Display new field in data table
 
-**📍 Location:** [ARCHITECTURE.md - Scenario 1](ARCHITECTURE.md#scenario-1-adding-a-new-field-to-existing-entity-vegproducts)
+**📍 Location:** [ARCHITECTURE.md - Scenario 1](docs/architecture/ARCHITECTURE.md#scenario-1-adding-a-new-field-to-existing-entity-vegproducts)
 
 ---
 
@@ -153,7 +156,7 @@ This project includes detailed step-by-step guides for common development tasks.
 - Handle dropdown selection for foreign keys
 - Test cascade delete behavior
 
-**📍 Location:** [ARCHITECTURE.md - Scenario 2](ARCHITECTURE.md#scenario-2-creating-new-entity-with-foreign-key-to-vegproducts)
+**📍 Location:** [ARCHITECTURE.md - Scenario 2](docs/architecture/ARCHITECTURE.md#scenario-2-creating-new-entity-with-foreign-key-to-vegproducts)
 
 ---
 
@@ -182,6 +185,16 @@ All documentation has been organized into the `/docs` folder for better project 
 - **[FILE-UPLOAD-IMPLEMENTATION-COMPLETE.md](docs/completed-features/FILE-UPLOAD-IMPLEMENTATION-COMPLETE.md)** - File upload completion
 - **[VEGTYPEWEIGHT-IMPLEMENTATION-COMPLETE.md](docs/completed-features/VEGTYPEWEIGHT-IMPLEMENTATION-COMPLETE.md)** - VegTypeWeight feature
 - **[MODAL-NOTIFICATION-SYSTEM.md](docs/completed-features/MODAL-NOTIFICATION-SYSTEM.md)** - Shared modal & notification system
+- **[ADMIN-FEATURES-IMPLEMENTATION.md](docs/completed-features/ADMIN-FEATURES-IMPLEMENTATION.md)** - Admin features implementation
+- **[ADMIN-NAVIGATION-REFACTORING.md](docs/completed-features/ADMIN-NAVIGATION-REFACTORING.md)** - Admin navigation refactoring
+- **[BACKEND-TESTING-IMPLEMENTATION-COMPLETE.md](docs/completed-features/BACKEND-TESTING-IMPLEMENTATION-COMPLETE.md)** - Backend testing implementation
+
+### Implementation Guides (`docs/implementation-guides/`) - continued
+- **[FRONTEND-AUTH-GUIDE.md](docs/implementation-guides/FRONTEND-AUTH-GUIDE.md)** - Frontend authentication guide
+- **[FRONTEND-AUTH-QUICK-START.md](docs/implementation-guides/FRONTEND-AUTH-QUICK-START.md)** - Frontend auth quick start
+
+### Project Assessment
+- **[PROJECT-ASSESSMENT-AND-RECOMMENDATIONS.md](docs/PROJECT-ASSESSMENT-AND-RECOMMENDATIONS.md)** - Project assessment and recommendations
 
 ### Angular Documentation
 - **[angular-app/README.md](angular-app/README.md)** - Angular-specific documentation
