@@ -1,7 +1,6 @@
 using DotNetCoreWebApi.Application.Entities;
 using DotNetCoreWebApi.Application.Interfaces;
-using DotNetCoreWebApi.Application.Services;
-using DotNetCoreWebApi.DTOs;
+using DotNetCoreWebApi.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNetCoreWebApi.Controllers;

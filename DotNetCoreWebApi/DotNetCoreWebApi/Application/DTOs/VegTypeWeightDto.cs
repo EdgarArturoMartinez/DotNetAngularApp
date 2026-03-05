@@ -1,4 +1,4 @@
-namespace DotNetCoreWebApi.DTOs;
+namespace DotNetCoreWebApi.Application.DTOs;
 
 /// <summary>
 /// DTO for returning TypeWeight data

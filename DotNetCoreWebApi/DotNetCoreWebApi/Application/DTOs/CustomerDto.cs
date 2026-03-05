@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using DotNetCoreWebApi.Application.Entities;
 
-namespace DotNetCoreWebApi.DTOs;
+namespace DotNetCoreWebApi.Application.DTOs;
 
 /// <summary>
 /// Data Transfer Object for Customer responses

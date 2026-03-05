@@ -2,7 +2,7 @@ using DotNetCoreWebApi.Application.DBContext;
 using DotNetCoreWebApi.Application.Entities;
 using DotNetCoreWebApi.Application.Interfaces;
 using DotNetCoreWebApi.Application.Services;
-using DotNetCoreWebApi.DTOs;
+using DotNetCoreWebApi.Application.DTOs;
 using DotNetCoreWebApi.Infrastructure.Repositories;
 using DotNetCoreWebApi.Tests.Helpers;
 using FluentAssertions;

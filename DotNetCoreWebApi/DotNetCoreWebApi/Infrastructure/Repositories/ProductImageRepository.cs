@@ -1,5 +1,6 @@
 using DotNetCoreWebApi.Application.DBContext;
 using DotNetCoreWebApi.Application.Entities;
+using DotNetCoreWebApi.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNetCoreWebApi.Infrastructure.Repositories;

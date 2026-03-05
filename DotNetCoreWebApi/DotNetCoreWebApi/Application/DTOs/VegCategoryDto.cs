@@ -1,4 +1,4 @@
-namespace DotNetCoreWebApi.DTOs;
+namespace DotNetCoreWebApi.Application.DTOs;
 
 public class VegCategoryDto
 {

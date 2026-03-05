@@ -1,8 +1,9 @@
 using DotNetCoreWebApi.Application.DBContext;
 using DotNetCoreWebApi.Application.Interfaces;
 using DotNetCoreWebApi.Application.Services;
-using DotNetCoreWebApi.Infrastructure.Repositories;
 using DotNetCoreWebApi.Infrastructure;
+using DotNetCoreWebApi.Infrastructure.Repositories;
+using DotNetCoreWebApi.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

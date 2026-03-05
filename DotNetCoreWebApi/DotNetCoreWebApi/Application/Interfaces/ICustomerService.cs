@@ -1,5 +1,5 @@
 using DotNetCoreWebApi.Application.Entities;
-using DotNetCoreWebApi.DTOs;
+using DotNetCoreWebApi.Application.DTOs;
 
 namespace DotNetCoreWebApi.Application.Interfaces;
 

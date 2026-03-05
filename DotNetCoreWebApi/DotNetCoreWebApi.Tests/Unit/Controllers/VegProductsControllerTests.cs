@@ -1,6 +1,6 @@
 using DotNetCoreWebApi.Application.Interfaces;
 using DotNetCoreWebApi.Controllers;
-using DotNetCoreWebApi.DTOs;
+using DotNetCoreWebApi.Application.DTOs;
 using DotNetCoreWebApi.Tests.Helpers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;

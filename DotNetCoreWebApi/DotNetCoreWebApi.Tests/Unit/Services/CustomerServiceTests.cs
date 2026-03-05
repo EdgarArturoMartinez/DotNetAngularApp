@@ -1,7 +1,7 @@
 using DotNetCoreWebApi.Application.Entities;
 using DotNetCoreWebApi.Application.Interfaces;
 using DotNetCoreWebApi.Application.Services;
-using DotNetCoreWebApi.DTOs;
+using DotNetCoreWebApi.Application.DTOs;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Moq;

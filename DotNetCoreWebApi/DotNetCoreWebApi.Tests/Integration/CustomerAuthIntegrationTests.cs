@@ -1,5 +1,5 @@
 using DotNetCoreWebApi.Application.Entities;
-using DotNetCoreWebApi.DTOs;
+using DotNetCoreWebApi.Application.DTOs;
 using DotNetCoreWebApi.Tests.Helpers;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;

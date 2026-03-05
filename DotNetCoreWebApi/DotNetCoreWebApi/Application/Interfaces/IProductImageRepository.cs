@@ -1,7 +1,6 @@
 using DotNetCoreWebApi.Application.Entities;
-using DotNetCoreWebApi.Application.Interfaces;
 
-namespace DotNetCoreWebApi.Infrastructure.Repositories;
+namespace DotNetCoreWebApi.Application.Interfaces;
 
 /// <summary>
 /// Repository interface for ProductImage entity operations

@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using DotNetCoreWebApi.Application.Entities;
 using DotNetCoreWebApi.Application.Interfaces;
-using DotNetCoreWebApi.DTOs;
+using DotNetCoreWebApi.Application.DTOs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 

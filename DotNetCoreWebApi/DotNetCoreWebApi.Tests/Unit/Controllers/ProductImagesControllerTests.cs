@@ -1,7 +1,7 @@
 using DotNetCoreWebApi.Application.Interfaces;
 using DotNetCoreWebApi.Application.Services;
 using DotNetCoreWebApi.Controllers;
-using DotNetCoreWebApi.DTOs;
+using DotNetCoreWebApi.Application.DTOs;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

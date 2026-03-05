@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DotNetCoreWebApi.DTOs;
+namespace DotNetCoreWebApi.Application.DTOs;
 
 /// <summary>
 /// DTO for retrieving product image information

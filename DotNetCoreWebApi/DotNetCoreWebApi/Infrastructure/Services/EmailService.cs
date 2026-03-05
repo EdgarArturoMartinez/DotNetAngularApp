@@ -4,7 +4,7 @@ using DotNetCoreWebApi.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace DotNetCoreWebApi.Application.Services;
+namespace DotNetCoreWebApi.Infrastructure.Services;
 
 /// <summary>
 /// Email service implementation using SMTP

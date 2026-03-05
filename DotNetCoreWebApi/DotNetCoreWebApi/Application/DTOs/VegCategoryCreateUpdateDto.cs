@@ -1,4 +1,4 @@
-namespace DotNetCoreWebApi.DTOs;
+namespace DotNetCoreWebApi.Application.DTOs;
 
 /// <summary>
 /// DTO for creating or updating a VegCategory
