@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DotNetCoreWebApi.Migrations
+namespace DotNetCoreWebApi.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class StockQuantity : Migration

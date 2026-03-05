@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DotNetCoreWebApi.Migrations
+namespace DotNetCoreWebApi.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class AddVegCategory : Migration
